@@ -5,7 +5,7 @@ from Colors import *
 
 
 class View(Component):
-    default_background_color = (255, 255, 255)
+    default_background_color = WHITE
 
     def __init__(
         self,
@@ -17,4 +17,10 @@ class View(Component):
         self.background_color = background_color
     
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
+        if region is None:
+            region = surf.get_rect()
+
         surf.fill(self.background_color, region)
+
+        # return the affected region
+        return region

@@ -1,9 +1,10 @@
 from typing import Sequence
 
 from View import *
+from Colors import *
 
 class GridView(View):
-    default_background_color = (255, 255, 255)
+    default_background_color = WHITE
 
     @staticmethod
     def compute_flex_map(layout):
@@ -41,27 +42,39 @@ class GridView(View):
         self.children = children
 
         self.flex_map, self.total_x_flex, self.total_y_flex = self.compute_flex_map(layout)
+        self.child_regions_cache = []   # format (Component, Rect)
+    
+    def process_event(self, event):
+        # Pass mouse events only to the affected child (with `pos` converted to child's local coordinates)
+        if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
+            for child, region in self.child_regions_cache:
+                if region.collidepoint(event.pos):
+                    # convert `pos` to local coords and include original as `parent_pos`
+                    local_pos = (event.pos[0] - region.left, event.pos[1] - region.top)
+                    event.pos, event.parent_pos = local_pos, event.pos
+                    child.process_event(event)
+                    break
+
         
     # renders self onto the given surface
     # TODO: min_spacing around children
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
-        if region is None:
-            region = surf.get_rect()
-        elif not surf.get_rect().contains(region):
-            raise ValueError(f"Invalid region: {region}; region must be contained within surf")
-
-        surf.fill(self.background_color, rect=region)
+        region = super().render_onto(surf, region)
 
         x_flex_px = region.width / self.total_x_flex
         y_flex_px = region.height / self.total_y_flex
         
+        self.child_regions_cache = []
         for row, flex_map_row in zip(self.layout, self.flex_map):
             for child, flex_map_child in zip(row, flex_map_row):
                 child_region = pygame.Rect(
-                    round(flex_map_child[0] * x_flex_px), round(flex_map_child[1] * y_flex_px),
-                    round(flex_map_child[2] * x_flex_px), round(flex_map_child[3] * y_flex_px)
+                    region.left + round(flex_map_child[0] * x_flex_px),
+                    region.top + round(flex_map_child[1] * y_flex_px),
+                    round(flex_map_child[2] * x_flex_px),
+                    round(flex_map_child[3] * y_flex_px)
                 )
-                child.render_onto(surf, region=child_region)        
+                self.child_regions_cache.append((child, child_region))
+                child.render_onto(surf, region=child_region)
 
 
 if __name__ == "__main__":
