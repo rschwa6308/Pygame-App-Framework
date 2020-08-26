@@ -1,14 +1,19 @@
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"   # bruh
 
+from typing import Tuple
+
 import pygame
 
 class Component:
-    def __init__(self, x_flex: int = 1, y_flex: int = 1):
+    """The base class for all UI elements"""
+    def __init__(
+        self,
+        x_flex: int = 1,
+        y_flex: int = 1
+    ):
         self.x_flex = x_flex
         self.y_flex = y_flex
-
-        self.children = []
 
         # Hooks are functions belonging to objects higher up in the tree (e.g. navigation actions)
         self.hooks = {}
@@ -19,15 +24,12 @@ class Component:
 
     def on_mount(self):
         """Called immediately before component is mounted to a Hoster"""
-        pass
 
     def on_unmount(self):
         """Called immediately after component is unmounted from a Hoster"""
-        pass
 
     def process_event(self, event: pygame.event.EventType):
         """Process the given pygame event object"""
-        pass
 
     def bind_hook(self, name: str, func, bind_to_children=False):
         """Bind a hook function (with a given name) to this component.
@@ -37,10 +39,10 @@ class Component:
         if bind_to_children:
             for child in self.children:
                 child.bind_hook(name, func, bind_to_children=True)
-    
+
     def run_hook(self, name: str, *args, **kwargs):
         """Run a previously bound hook (with a given name)"""
         if name not in self.hooks:
             raise ValueError(f"A \"{name}\" hook has not yet been bound to this component")
-
-        self.hooks[name](*args, **kwargs) 
+        
+        self.hooks[name](*args, **kwargs)

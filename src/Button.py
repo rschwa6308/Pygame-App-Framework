@@ -1,9 +1,9 @@
-from View import *
+from Text import *
 from Fonts import *
 
 from typing import Callable, Any
 
-class Button(View):
+class Button(Text):
     default_background_color = WHITE
     default_text_color = BLACK
 
@@ -15,20 +15,18 @@ class Button(View):
         text: str = "",
         text_color: Tuple[int, int, int] = default_text_color,
         # must be a function of the form (self, event) -> any
-        on_click: Callable[[Component, pygame.event.EventType], Any] = lambda self, event: None
+        on_click: Callable[[View, pygame.event.EventType], Any] = lambda self, event: None,
+        **kwargs
     ):
-        super().__init__(x_flex, y_flex, background_color)
-        
-        self.text = text
-        self.text_color = text_color
-
+        super().__init__(x_flex, y_flex, background_color, text, text_color, **kwargs)
         self.on_click = on_click
     
     def process_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
+                print(self)
                 self.on_click(self, event)
     
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
         region = super().render_onto(surf, region)
-        default_font.render_to(surf, region.topleft, self.text, self.text_color)
+        # render_text_to(surf, "CENTER", self.text, region=region, fgcolor=self.text_color)

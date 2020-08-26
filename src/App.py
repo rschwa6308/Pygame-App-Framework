@@ -1,6 +1,7 @@
 from Hoster import *
 from GridView import *
 from Button import *
+from Text import *
 
 class App:
     default_target_fps = 60
@@ -17,6 +18,8 @@ class App:
     def run(self, screen_dims=(800, 600), target_fps=default_target_fps):
         self.alive = True
         self.screen = pygame.display.set_mode(screen_dims, pygame.RESIZABLE)
+
+        self.update_screen()
 
         clock = pygame.time.Clock()
 
@@ -37,7 +40,7 @@ class App:
 if __name__ == "__main__":
     test_button = Button(
         1, 1, RED,
-        text="Hello, World!",
+        text="Navigate to Other!",
         on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "other")
     )
 
@@ -53,7 +56,7 @@ if __name__ == "__main__":
 
     test_component_2 = GridView([
         [View(1, 2, BLACK), test_component_2a],
-        [View(2, 1, BLUE)]
+        [Text(2, 1, BLUE, "Hello, World!")]
     ])
 
     test_hoster = Hoster(

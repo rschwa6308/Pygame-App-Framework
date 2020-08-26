@@ -36,10 +36,9 @@ class GridView(View):
         if not all(isinstance(child, Component) for child in children):
             raise ValueError(f"Invalid children argument: {children}; children must all be Components")
 
-        super().__init__(x_flex, y_flex, background_color)
+        super().__init__(x_flex, y_flex, background_color, children=children)
         
         self.layout = layout
-        self.children = children
 
         self.flex_map, self.total_x_flex, self.total_y_flex = self.compute_flex_map(layout)
         self.child_regions_cache = []   # format (Component, Rect)
