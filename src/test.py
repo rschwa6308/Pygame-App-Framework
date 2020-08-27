@@ -10,6 +10,7 @@ NUM_LEVELS = 15
 LEVELS_PER_ROW = 5
 
 
+# TODO: add back button as a child component positioned in the top left
 level_screens = [
     Text(1, 1, choice(ACCENTS), f"Level #{x + 1}")
     for x in range(NUM_LEVELS)

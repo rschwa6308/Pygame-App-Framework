@@ -17,7 +17,8 @@ class View(Component):
         border_width: int = 0,
         border_radius: int = 0,
         margins: Tuple[int, int, int, int] = (0, 0, 0, 0),  # (N, E, S, W)
-        children: Sequence[Component] = []
+        children: Sequence[Component] = [],
+        parent_dest: pygame.Rect = None     # a rect with all coords and dims in [0, 1]
     ):
         super().__init__(x_flex, y_flex)
         self.background_color = background_color
@@ -26,6 +27,7 @@ class View(Component):
         self.border_radius = border_radius
         self.margins = margins
         self.children = children
+        self.parent_dest = parent_dest
     
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
         if region is None:
@@ -52,9 +54,15 @@ class View(Component):
             surf.fill(self.background_color, region)        # fill background
         
         # render all children (on top)
+        # TODO: store child_regions_cache here vvv
         for child in self.children:
-            pass
-            # TODO!!! decide where parent position should be tracked / abs positioning?
+            child_region = pygame.Rect(
+                region.left * self.parent_dest.left,
+                region.top * self.parent_dest.top,
+                region.width * self.parent_dest.width,
+                region.height * self.parent_dest.height
+            )
+            child.render_onto(surf, child_region)
 
         # return the affected region
         return region

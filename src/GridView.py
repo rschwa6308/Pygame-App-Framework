@@ -57,6 +57,7 @@ class GridView(View):
         
     # renders self onto the given surface
     # TODO: min_spacing around children
+    # TODO: use children positioning from parent class (do not call child.render_onto(...) here)
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
         region = super().render_onto(surf, region)
 
