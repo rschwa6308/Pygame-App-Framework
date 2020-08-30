@@ -1,25 +1,25 @@
+from __future__ import annotations
+from typing import Tuple, Sequence
+
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"   # bruh
 
-from typing import Tuple
-
 import pygame
+
 
 class Component:
     """The base class for all UI elements"""
     def __init__(
         self,
-        x_flex: int = 1,
-        y_flex: int = 1
+        children: Sequence[Component] = []
     ):
-        self.x_flex = x_flex
-        self.y_flex = y_flex
+        self.children = children
 
         # Hooks are functions belonging to objects higher up in the tree (e.g. navigation actions)
         self.hooks = {}
 
     def render_onto(self, surf: pygame.Surface):
-        """Renders the contents of self to the given surface"""
+        """Render the contents of self to the given surface"""
         raise NotImplementedError("Component subclass must implement the render_onto() method")
 
     def on_mount(self):

@@ -10,9 +10,17 @@ NUM_LEVELS = 15
 LEVELS_PER_ROW = 5
 
 
-# TODO: add back button as a child component positioned in the top left
 level_screens = [
-    Text(1, 1, choice(ACCENTS), f"Level #{x + 1}")
+    Text(1, 1, choice(ACCENTS), f"Level #{x + 1}", children=[
+        Button(
+            text="BACK",
+            border_width=3,
+            border_radius=10,
+            font_kwargs={"bold": True, "italic": True},
+            parent_dest=(0.1, 0.1, 0.1, 0.1),   # position within parent
+            on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "level_select"),
+        )
+    ])
     for x in range(NUM_LEVELS)
 ]
 
@@ -22,6 +30,7 @@ level_select_buttons = [
         background_color=level.background_color,
         text=f"Level #{x + 1}",
         text_color=WHITE,
+        font_kwargs={"bold": True},
         border_width=10,
         border_radius=20,
         on_click=lambda self, event: self.run_hook("NAVIGATE_TO", self.nav_target),
@@ -38,9 +47,27 @@ for x, button in enumerate(level_select_buttons):
 
 num_rows = NUM_LEVELS // LEVELS_PER_ROW
 level_select_screen = GridView([
+    [Text(5, 0.5, text="Level Select")]
+] + [
     level_select_buttons[row * LEVELS_PER_ROW:(row + 1) * LEVELS_PER_ROW]
     for row in range(NUM_LEVELS // LEVELS_PER_ROW)
 ])
+
+
+
+# class Image(View):
+#     def __init__(self, image: pygame.Surface, **kwargs):
+#         super().__init___(**kwargs)
+#         self.image = image
+
+#     def render_onto(self, surf, region=None):
+#         # TODO: scale `self.image` to fill `region` here
+#         self.image.blit(surf, (0, 0))
+        
+
+
+
+
 
 
 hoster = Hoster(

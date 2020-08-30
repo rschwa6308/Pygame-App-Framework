@@ -6,14 +6,13 @@ from Colors import *
 class GridView(View):
     default_background_color = WHITE
 
-    @staticmethod
-    def compute_flex_map(layout):
-        total_x_flex = max(sum(child.x_flex for child in row) for row in layout) if layout else 1
-        total_y_flex = sum(max(child.y_flex for child in row) for row in layout) if layout else 1
+    def compute_flex_map(self):
+        total_x_flex = max(sum(child.x_flex for child in row) for row in self.layout) if self.layout else 1
+        total_y_flex = sum(max(child.y_flex for child in row) for row in self.layout) if self.layout else 1
         
         flex_map = []
         y = 0
-        for row in layout:
+        for row in self.layout:
             flex_map_row = []
             x = 0
             for child in row:
@@ -22,8 +21,18 @@ class GridView(View):
             flex_map.append(flex_map_row)
             y += max(child.y_flex for child in row)
 
-        return (flex_map, total_x_flex, total_y_flex)
+        self.flex_map, self.total_x_flex, self.total_y_flex = flex_map, total_x_flex, total_y_flex
     
+    def compute_parent_dests(self):
+        for row, flex_map_row in zip(self.layout, self.flex_map):
+            for child, flex_map_child in zip(row, flex_map_row):
+                child.parent_dest = (
+                    flex_map_child[0] / self.total_x_flex,
+                    flex_map_child[1] / self.total_y_flex,
+                    flex_map_child[2] / self.total_x_flex,
+                    flex_map_child[3] / self.total_y_flex
+                )
+
     def __init__(
         self,
         layout: Sequence[Sequence[Component]] = [],
@@ -40,41 +49,35 @@ class GridView(View):
         
         self.layout = layout
 
-        self.flex_map, self.total_x_flex, self.total_y_flex = self.compute_flex_map(layout)
-        self.child_regions_cache = []   # format (Component, Rect)
-    
-    def process_event(self, event):
-        # Pass mouse events only to the affected child (with `pos` converted to child's local coordinates)
-        if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
-            for child, region in self.child_regions_cache:
-                if region.collidepoint(event.pos):
-                    # convert `pos` to local coords and include original as `parent_pos`
-                    local_pos = (event.pos[0] - region.left, event.pos[1] - region.top)
-                    event.pos, event.parent_pos = local_pos, event.pos
-                    child.process_event(event)
-                    break
+        self.compute_flex_map()
+        # self.child_regions_cache = []   # format (Component, Rect) TODO: remove in favor of implementation in `View`
+
+        # calculate children's `parent_dest`s based on flex_map
+        self.compute_parent_dests()
 
         
-    # renders self onto the given surface
-    # TODO: min_spacing around children
-    # TODO: use children positioning from parent class (do not call child.render_onto(...) here)
-    def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
-        region = super().render_onto(surf, region)
 
-        x_flex_px = region.width / self.total_x_flex
-        y_flex_px = region.height / self.total_y_flex
         
-        self.child_regions_cache = []
-        for row, flex_map_row in zip(self.layout, self.flex_map):
-            for child, flex_map_child in zip(row, flex_map_row):
-                child_region = pygame.Rect(
-                    region.left + round(flex_map_child[0] * x_flex_px),
-                    region.top + round(flex_map_child[1] * y_flex_px),
-                    round(flex_map_child[2] * x_flex_px),
-                    round(flex_map_child[3] * y_flex_px)
-                )
-                self.child_regions_cache.append((child, child_region))
-                child.render_onto(surf, region=child_region)
+    # # renders self onto the given surface
+    # # TODO: min_spacing around children
+    # # TODO: use children positioning from parent class (do not call child.render_onto(...) here)
+    # def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
+    #     region = super().render_onto(surf, region)
+
+    #     x_flex_px = region.width / self.total_x_flex
+    #     y_flex_px = region.height / self.total_y_flex
+        
+    #     self.child_regions_cache = []
+    #     for row, flex_map_row in zip(self.layout, self.flex_map):
+    #         for child, flex_map_child in zip(row, flex_map_row):
+    #             child_region = pygame.Rect(
+    #                 region.left + round(flex_map_child[0] * x_flex_px),
+    #                 region.top + round(flex_map_child[1] * y_flex_px),
+    #                 round(flex_map_child[2] * x_flex_px),
+    #                 round(flex_map_child[3] * y_flex_px)
+    #             )
+    #             self.child_regions_cache.append((child, child_region))
+    #             child.render_onto(surf, region=child_region)
 
 
 if __name__ == "__main__":

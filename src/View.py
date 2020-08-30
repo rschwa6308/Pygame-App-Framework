@@ -17,17 +17,20 @@ class View(Component):
         border_width: int = 0,
         border_radius: int = 0,
         margins: Tuple[int, int, int, int] = (0, 0, 0, 0),  # (N, E, S, W)
-        children: Sequence[Component] = [],
-        parent_dest: pygame.Rect = None     # a rect with all coords and dims in [0, 1]
+        parent_dest: Tuple[float, float, float, float] = (0, 0, 1, 1),            # (L, T, W, H) (floating point in [0, 1]),
+        **kwargs
     ):
-        super().__init__(x_flex, y_flex)
+        super().__init__(**kwargs)
+        self.x_flex = x_flex
+        self.y_flex = y_flex
         self.background_color = background_color
         self.border_color = border_color
         self.border_width = border_width
         self.border_radius = border_radius
         self.margins = margins
-        self.children = children
         self.parent_dest = parent_dest
+
+        self.child_regions_cache = []   # format (Component, Rect)
     
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
         if region is None:
@@ -42,27 +45,39 @@ class View(Component):
         )
 
         if self.border_width > 0:
-            pygame.draw.rect(                               # fill background
+            pygame.draw.rect(                                   # fill background
                 surf, self.background_color, region,
                 width=0, border_radius=self.border_radius
             )
-            pygame.draw.rect(                               # draw border
+            pygame.draw.rect(                                   # draw border
                 surf, self.border_color, region,
                 width=self.border_width, border_radius=self.border_radius
             )
         else:
-            surf.fill(self.background_color, region)        # fill background
+            surf.fill(self.background_color, region)            # fill background
         
         # render all children (on top)
-        # TODO: store child_regions_cache here vvv
+        self.child_regions_cache = []                               # clear cache
         for child in self.children:
             child_region = pygame.Rect(
-                region.left * self.parent_dest.left,
-                region.top * self.parent_dest.top,
-                region.width * self.parent_dest.width,
-                region.height * self.parent_dest.height
+                region.left + region.width * child.parent_dest[0],
+                region.top + region.height * child.parent_dest[1],
+                region.width * child.parent_dest[2],
+                region.height * child.parent_dest[3]
             )
+            self.child_regions_cache.append((child, child_region))  # save in cache
             child.render_onto(surf, child_region)
 
         # return the affected region
         return region
+    
+    def process_event(self, event):
+        # Pass mouse events only to the affected child (with `pos` converted to child's local coordinates)
+        if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
+            for child, region in self.child_regions_cache:
+                if region.collidepoint(event.pos):
+                    # convert `pos` to local coords and include original as `parent_pos`
+                    local_pos = (event.pos[0] - region.left, event.pos[1] - region.top)
+                    event.pos, event.parent_pos = local_pos, event.pos
+                    child.process_event(event)
+                    break
