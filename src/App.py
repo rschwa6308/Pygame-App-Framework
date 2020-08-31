@@ -2,6 +2,7 @@ from Hoster import *
 from GridView import *
 from Button import *
 from Text import *
+from Image import *
 
 class App:
     default_target_fps = 60
@@ -54,8 +55,11 @@ if __name__ == "__main__":
         [View(1, 1, RED), View(1, 1, GREEN)]
     ], x_flex=1, y_flex=1)
 
+    test_assets_dir = os.path.join(os.path.dirname(__file__), "test_assets")
+    test_image_source = pygame.image.load(os.path.join(test_assets_dir, "smile.png"))
+
     test_component_2 = GridView([
-        [View(1, 2, BLACK), test_component_2a],
+        [Image(image=test_image_source, scale_mode="ORIGINAL"), test_component_2a],
         [Text(2, 1, BLUE, "Hello, World!")]
     ])
 

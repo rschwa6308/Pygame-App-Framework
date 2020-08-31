@@ -54,22 +54,6 @@ level_select_screen = GridView([
 ])
 
 
-
-# class Image(View):
-#     def __init__(self, image: pygame.Surface, **kwargs):
-#         super().__init___(**kwargs)
-#         self.image = image
-
-#     def render_onto(self, surf, region=None):
-#         # TODO: scale `self.image` to fill `region` here
-#         self.image.blit(surf, (0, 0))
-        
-
-
-
-
-
-
 hoster = Hoster(
     {
         "level_select": level_select_screen,
@@ -84,3 +68,16 @@ hoster = Hoster(
 
 app = App(hoster)
 app.run()
+
+
+
+
+
+
+
+
+
+        
+
+
+
