@@ -9,7 +9,7 @@ class App:
 
     def __init__(self, hoster: Hoster):
         self.hoster = hoster
-        self.hoster.bind_hook("TRIGGER_UPDATE", self.update_screen, bind_to_children=True)
+        self.hoster.bind_hook("TRIGGER_RERENDER", self.update_screen, bind_to_children=True)
         self.alive = False
     
     def update_screen(self):
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     test_image_source = pygame.image.load(os.path.join(test_assets_dir, "smile.png"))
 
     test_component_2 = GridView([
-        [Image(image=test_image_source, scale_mode="ORIGINAL"), test_component_2a],
+        [Image(image=test_image_source), test_component_2a],
         [Text(2, 1, BLUE, "Hello, World!")]
     ])
 

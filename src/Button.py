@@ -7,6 +7,13 @@ class Button(Text):
     default_background_color = WHITE
     default_text_color = BLACK
 
+    hover_opacity = 0.75
+    press_opacity = 0.5
+    # opacity_color = (*BLACK, 127)
+
+    rerender_on_hover = True
+    rerender_on_press = True
+
     def __init__(
         self,
         x_flex: int = 1,
@@ -22,11 +29,20 @@ class Button(Text):
         self.on_click = on_click
     
     def process_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            if self.ui_state["press"]:
                 print(self)
                 self.on_click(self, event)
     
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
+        temp = self.background_color
+
+        if self.ui_state["press"]:
+            self.background_color = tuple(x * self.press_opacity for x in temp)
+        elif self.ui_state["hover"]:
+            self.background_color = tuple(x * self.hover_opacity for x in temp)
+
+        
         region = super().render_onto(surf, region)
-        # render_text_to(surf, "CENTER", self.text, region=region, fgcolor=self.text_color)
+        self.background_color = temp
+

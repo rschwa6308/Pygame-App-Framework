@@ -15,7 +15,7 @@ class View(Component):
         background_color: Tuple[int, int, int] = default_background_color,
         border_color: Tuple[int, int, int] = default_border_color,
         border_width: int = 0,
-        border_radius: int = 0,
+        border_radius: int = 1,
         margins: Tuple[int, int, int, int] = (0, 0, 0, 0),  # (N, E, S, W)
         parent_dest: Tuple[float, float, float, float] = (0, 0, 1, 1),            # (L, T, W, H) (floating point in [0, 1]),
         **kwargs
@@ -31,6 +31,12 @@ class View(Component):
         self.parent_dest = parent_dest
 
         self.child_regions_cache = []   # format (Component, Rect)
+        self.ui_state = {
+            "hover": False,
+            "press": False
+        }
+        self.hover_child = None
+        self.press_child = None
     
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
         if region is None:
@@ -72,12 +78,65 @@ class View(Component):
         return region
     
     def process_event(self, event):
-        # Pass mouse events only to the affected child (with `pos` converted to child's local coordinates)
+        # Handle all mouse events
         if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
+            new_hover_child = None
+
+            # find new hover child
             for child, region in self.child_regions_cache:
                 if region.collidepoint(event.pos):
-                    # convert `pos` to local coords and include original as `parent_pos`
+                    new_hover_child = child
+                    # convert `pos` to local coords and include original as `parent_pos` and process event
                     local_pos = (event.pos[0] - region.left, event.pos[1] - region.top)
-                    event.pos, event.parent_pos = local_pos, event.pos
-                    child.process_event(event)
+                    converted_event = event
+                    converted_event.pos, converted_event.parent_pos = local_pos, event.pos
                     break
+
+            # Pass mouse-motion events only to the affected child and handle hover changes
+            if event.type == pygame.MOUSEMOTION:
+                if new_hover_child is not None:
+                    new_hover_child.process_event(converted_event)
+                # handle hover changes
+                if self.hover_child is None and new_hover_child is None:
+                    pass
+                elif self.hover_child is None:
+                    new_hover_child.ui_state["hover"] = True
+                    if new_hover_child.rerender_on_hover:
+                        new_hover_child.run_hook("TRIGGER_RERENDER")
+                elif new_hover_child is None:
+                    self.hover_child.ui_state["hover"] = False
+                    if self.hover_child.rerender_on_hover:
+                        self.hover_child.run_hook("TRIGGER_RERENDER")
+                elif self.hover_child is not new_hover_child:
+                    self.hover_child.ui_state["hover"] = False
+                    new_hover_child.ui_state["hover"] = True
+                    if self.hover_child.rerender_on_hover or new_hover_child.rerender_on_hover:
+                        new_hover_child.run_hook("TRIGGER_RERENDER")
+                self.hover_child = new_hover_child
+
+            # Pass mouse-button-down event only to the affected child and handle press changes
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if new_hover_child is not None:
+                    new_hover_child.process_event(converted_event)
+                # handle press changes
+                if event.button == 1 and new_hover_child is not None:
+                    new_hover_child.ui_state["press"] = True
+                    if new_hover_child.rerender_on_press:
+                        new_hover_child.run_hook("TRIGGER_RERENDER")
+                    self.press_child = new_hover_child
+        
+            # Pass mouse-button-up events only to the currently pressed child (if it exists) and handle press changes
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if self.press_child is not None:
+                    self.press_child.process_event(converted_event)
+                # handle press changes
+                if event.button == 1 and self.press_child is not None:
+                    self.press_child.ui_state["press"] = False
+                    if self.press_child.rerender_on_press:
+                        self.press_child.run_hook("TRIGGER_RERENDER")
+                    self.press_child = None
+
+        # Pass all other event types to all children
+        else:
+            for child in self.children:
+                child.process_event(event)

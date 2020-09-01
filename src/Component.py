@@ -9,6 +9,10 @@ import pygame
 
 class Component:
     """The base class for all UI elements"""
+
+    rerender_on_hover = False
+    rerender_on_press = False
+
     def __init__(
         self,
         children: Sequence[Component] = []

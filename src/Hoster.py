@@ -21,7 +21,7 @@ class Hoster(Component):
         self.current_component().on_unmount()
         self.component_id_map[new_id].on_mount()
         self.current_id = new_id
-        self.run_hook("TRIGGER_UPDATE")
+        self.run_hook("TRIGGER_RERENDER")
     
     def process_event(self, event):
         self.current_component().process_event(event)

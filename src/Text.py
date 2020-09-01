@@ -27,3 +27,4 @@ class Text(View):
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
         region = super().render_onto(surf, region)
         render_text_to(surf, "CENTER", self.text, region=region, fgcolor=self.text_color, **self.font_kwargs)
+        return region
