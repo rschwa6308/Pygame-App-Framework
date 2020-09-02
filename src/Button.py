@@ -31,7 +31,6 @@ class Button(Text):
     def process_event(self, event):
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             if self.ui_state["press"]:
-                print(self)
                 self.on_click(self, event)
     
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):

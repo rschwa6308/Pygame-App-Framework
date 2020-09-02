@@ -38,46 +38,22 @@ class GridView(View):
         layout: Sequence[Sequence[Component]] = [],
         x_flex: int = 1,
         y_flex: int = 1,
-        background_color: Tuple[int, int, int] = default_background_color
+        background_color: Tuple[int, int, int] = default_background_color,
+        **kwargs
     ):
         children = [child for row in layout for child in row]
 
         if not all(isinstance(child, Component) for child in children):
             raise ValueError(f"Invalid children argument: {children}; children must all be Components")
 
-        super().__init__(x_flex, y_flex, background_color, children=children)
+        super().__init__(x_flex, y_flex, background_color, children=children, **kwargs)
         
         self.layout = layout
 
         self.compute_flex_map()
-        # self.child_regions_cache = []   # format (Component, Rect) TODO: remove in favor of implementation in `View`
 
         # calculate children's `parent_dest`s based on flex_map
         self.compute_parent_dests()
-
-        
-
-        
-    # # renders self onto the given surface
-    # # TODO: min_spacing around children
-    # # TODO: use children positioning from parent class (do not call child.render_onto(...) here)
-    # def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
-    #     region = super().render_onto(surf, region)
-
-    #     x_flex_px = region.width / self.total_x_flex
-    #     y_flex_px = region.height / self.total_y_flex
-        
-    #     self.child_regions_cache = []
-    #     for row, flex_map_row in zip(self.layout, self.flex_map):
-    #         for child, flex_map_child in zip(row, flex_map_row):
-    #             child_region = pygame.Rect(
-    #                 region.left + round(flex_map_child[0] * x_flex_px),
-    #                 region.top + round(flex_map_child[1] * y_flex_px),
-    #                 round(flex_map_child[2] * x_flex_px),
-    #                 round(flex_map_child[3] * y_flex_px)
-    #             )
-    #             self.child_regions_cache.append((child, child_region))
-    #             child.render_onto(surf, region=child_region)
 
 
 if __name__ == "__main__":

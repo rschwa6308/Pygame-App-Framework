@@ -10,11 +10,15 @@ class App:
     def __init__(self, hoster: Hoster):
         self.hoster = hoster
         self.hoster.bind_hook("TRIGGER_RERENDER", self.update_screen, bind_to_children=True)
+        self.hoster.bind_hook("QUIT_APP", self.quit, bind_to_children=True)
         self.alive = False
     
     def update_screen(self):
         self.hoster.render_onto(self.screen)
         pygame.display.update()
+    
+    def quit(self):
+        self.alive = False
     
     def run(self, screen_dims=(800, 600), target_fps=default_target_fps):
         self.alive = True
@@ -52,7 +56,7 @@ if __name__ == "__main__":
 
     test_component_2a = GridView([
         [View(1, 1, GREEN), View(1, 1, RED)],
-        [View(1, 1, RED), View(1, 1, GREEN)]
+        [Button(1, 1, RED, text="HIT", on_click=lambda self, event: print("HIT")), View(1, 1, GREEN)]
     ], x_flex=1, y_flex=1)
 
     test_assets_dir = os.path.join(os.path.dirname(__file__), "test_assets")

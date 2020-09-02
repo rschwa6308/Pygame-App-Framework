@@ -63,16 +63,23 @@ class View(Component):
             surf.fill(self.background_color, region)            # fill background
         
         # render all children (on top)
-        self.child_regions_cache = []                               # clear cache
+        self.child_regions_cache = []                                   # clear cache
         for child in self.children:
             child_region = pygame.Rect(
+                region.width * child.parent_dest[0],
+                region.height * child.parent_dest[1],
+                region.width * child.parent_dest[2],
+                region.height * child.parent_dest[3]
+            )
+            child_region_abs = pygame.Rect(
                 region.left + region.width * child.parent_dest[0],
                 region.top + region.height * child.parent_dest[1],
                 region.width * child.parent_dest[2],
                 region.height * child.parent_dest[3]
             )
-            self.child_regions_cache.append((child, child_region))  # save in cache
-            child.render_onto(surf, child_region)
+
+            self.child_regions_cache.append((child, child_region))      # save in cache
+            child.render_onto(surf, child_region_abs)
 
         # return the affected region
         return region

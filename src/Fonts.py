@@ -8,16 +8,18 @@ DEFAULT_FONT_SIZE = 24
 pygame.freetype.init()
 
 font_cache = {}
-def get_font(font_name=DEFAULT_FONT_NAME, font_size=DEFAULT_FONT_SIZE, bold=False, italic=False):
+def get_font(font_name=DEFAULT_FONT_NAME, font_size=DEFAULT_FONT_SIZE, bold=False, italic=False, underline=False):
     """Get a `Font` object (cached)"""
     key = f"{font_name}-{font_size}"
     if bold: key += "-bold"
     if italic: key += "-italic"
+    if underline: key += "-underline"
 
     if key in font_cache:
         font = font_cache[key]
     else:
         font = pygame.freetype.SysFont(font_name, font_size, bold, italic)
+        font.underline = underline
         font_cache[key] = font
 
     return font
@@ -25,11 +27,11 @@ def get_font(font_name=DEFAULT_FONT_NAME, font_size=DEFAULT_FONT_SIZE, bold=Fals
 
 def render_text_to(
     surf, dest, text, region=None,
-    font_name=DEFAULT_FONT_NAME, font_size=DEFAULT_FONT_SIZE, bold=False, italic=False, **kwargs
+    font_name=DEFAULT_FONT_NAME, font_size=DEFAULT_FONT_SIZE, bold=False, italic=False, underline=False, **kwargs
 ):
     """Render the given text onto the given surface.
     Argument `dest` can be either coordinates (local to region) or "CENTER"."""
-    font = get_font(font_name, font_size, bold, italic)
+    font = get_font(font_name, font_size, bold, italic, underline)
 
     if region is None:
         region = surf.get_rect()
