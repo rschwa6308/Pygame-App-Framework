@@ -50,9 +50,9 @@ menu_screen = View(
 hoster = Hoster(
     {
         "menu": menu_screen,
-        "level_select": TODO,
-        "settings": TODO,
-        "credits": TODO
+        # "level_select": TODO,
+        # "settings": TODO,
+        # "credits": TODO
     },
     "menu"
 )
