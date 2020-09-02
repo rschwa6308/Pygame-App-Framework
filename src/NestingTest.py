@@ -5,14 +5,14 @@ from App import *
 import random
 
 
-DEPTH = 10
+DEPTH = 3
 
 
 # TODO: fix hover issue here :)
 curr = Button()
 
 
-for _ in range(DEPTH - 1):
+for _ in range(DEPTH):
     curr = View(
         children=[curr],
         parent_dest=(0.1, 0.1, 0.8, 0.8),
