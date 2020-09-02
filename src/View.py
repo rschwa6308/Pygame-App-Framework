@@ -135,7 +135,7 @@ class View(Component):
             # Pass mouse-button-up events only to the currently pressed child (if it exists) and handle press changes
             elif event.type == pygame.MOUSEBUTTONUP:
                 if self.press_child is not None:
-                    self.press_child.process_event(converted_event)
+                    self.press_child.process_event(event)   # TODO: pass converted_event (if necessary)
                 # handle press changes
                 if event.button == 1 and self.press_child is not None:
                     self.press_child.ui_state["press"] = False
