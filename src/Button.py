@@ -9,10 +9,11 @@ class Button(Text):
 
     hover_opacity = 0.75
     press_opacity = 0.5
-    # opacity_color = (*BLACK, 127)
 
-    rerender_on_hover = True
-    rerender_on_press = True
+    rerender_ui_triggers = {
+        "hover": True,
+        "press": True
+    }
 
     def __init__(
         self,

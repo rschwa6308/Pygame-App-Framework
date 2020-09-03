@@ -10,8 +10,10 @@ import pygame
 class Component:
     """The base class for all UI elements"""
 
-    rerender_on_hover = False
-    rerender_on_press = False
+    rerender_ui_triggers = {
+        "hover": False,
+        "press": False
+    }
 
     def __init__(
         self,
@@ -50,3 +52,22 @@ class Component:
             raise ValueError(f"A \"{name}\" hook has not yet been bound to this component")
         
         self.hooks[name](*args, **kwargs)
+    
+    def set_ui_state(self, field_name, val):
+        print(self, field_name, val)
+        if field_name not in self.ui_state:
+            raise ValueError(f"Field name \"{field_name}\" is not a valid ui_state field")
+            
+        print(self.rerender_ui_triggers[field_name], (self.ui_state[field_name] != val))
+        rerender = self.rerender_ui_triggers[field_name] and (self.ui_state[field_name] != val)
+
+        self.ui_state[field_name] = val
+
+        if rerender:
+            print("RERENDER!")
+            self.run_hook("TRIGGER_RERENDER")
+
+        # If removing hover, recursively remove hover from all children
+        if field_name == "hover" and not val:
+            for child in self.children:
+                child.set_ui_state("hover", False)
