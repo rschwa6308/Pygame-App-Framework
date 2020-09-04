@@ -53,12 +53,11 @@ class Component:
         
         self.hooks[name](*args, **kwargs)
     
-    def set_ui_state(self, field_name, val):
-        # print(self, field_name, val)
+    def set_ui_state(self, field_name: str, val: bool):
+        """Set the value of a given UI state field"""
         if field_name not in self.ui_state:
             raise ValueError(f"Field name \"{field_name}\" is not a valid ui_state field")
-            
-        # print(self.rerender_ui_triggers[field_name], (self.ui_state[field_name] != val))
+
         rerender = self.rerender_ui_triggers[field_name] and (self.ui_state[field_name] != val)
 
         self.ui_state[field_name] = val

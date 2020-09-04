@@ -85,7 +85,6 @@ class View(Component):
         return region
     
     def process_event(self, event):
-        # print(f"{self}.process_event({event})")
         # Handle all mouse events
         if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
             new_hover_child = None
@@ -100,8 +99,6 @@ class View(Component):
                     converted_event.pos, converted_event.parent_pos = local_pos, event.pos
                     break
             
-            # print(f"{self}'s NEW HOVER CHILD: {new_hover_child}")
-
             # Pass mouse-motion events only to the affected child and handle hover changes
             if event.type == pygame.MOUSEMOTION:
                 if new_hover_child is not None:
