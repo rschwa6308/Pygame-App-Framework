@@ -63,12 +63,12 @@ class Component:
 
         self.ui_state[field_name] = val
 
-        if rerender:
-            print("RERENDER!")
-            self.run_hook("TRIGGER_RERENDER")
-
         # If removing hover, clear hover child and recursively remove hover from all children
         if field_name == "hover" and not val:
             self.hover_child = None
             for child in self.children:
                 child.set_ui_state("hover", False)
+
+        if rerender:
+            print("RERENDER!")
+            self.run_hook("TRIGGER_RERENDER")
