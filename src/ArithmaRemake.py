@@ -64,20 +64,24 @@ for x, button in enumerate(level_select_buttons):
 # TODO: move "Levels" text to `level_select_screen.children`
 num_rows = NUM_LEVELS // LEVELS_PER_ROW
 level_select_layout = [
-    [Text(LEVELS_PER_ROW, 0.5, text="Levels", **menu_h2_style)]
-] + [
     level_select_buttons[row * LEVELS_PER_ROW:(row + 1) * LEVELS_PER_ROW]
     for row in range(NUM_LEVELS // LEVELS_PER_ROW)
 ]
 
 level_select_screen = View(children=[
+    Text(
+        LEVELS_PER_ROW, 0.5,
+        text="Levels",
+        parent_dest=(0.25, 0.0, 0.5, 0.1),
+        **menu_h2_style),
     GridView(
         level_select_layout,
-        parent_dest=(0.1, 0.0, 0.75, 0.8)
+        parent_dest=(0.1, 0.1, 0.8, 0.7)
     ),
     Button(
         text="Back",
         parent_dest=(0.4, 0.85, 0.2, 0.1),
+        on_click=lambda self, event: self.run_hook("NAVIGATE_BACK"),
         **menu_button_style
     )
 ])

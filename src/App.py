@@ -24,6 +24,8 @@ class App:
         self.alive = True
         self.screen = pygame.display.set_mode(screen_dims, pygame.RESIZABLE)
 
+        # Mount the hoster and render to the screen
+        self.hoster.on_mount()
         self.update_screen()
 
         clock = pygame.time.Clock()

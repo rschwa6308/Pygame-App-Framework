@@ -54,11 +54,11 @@ class Component:
         self.hooks[name](*args, **kwargs)
     
     def set_ui_state(self, field_name, val):
-        print(self, field_name, val)
+        # print(self, field_name, val)
         if field_name not in self.ui_state:
             raise ValueError(f"Field name \"{field_name}\" is not a valid ui_state field")
             
-        print(self.rerender_ui_triggers[field_name], (self.ui_state[field_name] != val))
+        # print(self.rerender_ui_triggers[field_name], (self.ui_state[field_name] != val))
         rerender = self.rerender_ui_triggers[field_name] and (self.ui_state[field_name] != val)
 
         self.ui_state[field_name] = val
@@ -67,7 +67,8 @@ class Component:
             print("RERENDER!")
             self.run_hook("TRIGGER_RERENDER")
 
-        # If removing hover, recursively remove hover from all children
+        # If removing hover, clear hover child and recursively remove hover from all children
         if field_name == "hover" and not val:
+            self.hover_child = None
             for child in self.children:
                 child.set_ui_state("hover", False)

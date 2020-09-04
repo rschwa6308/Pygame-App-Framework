@@ -85,6 +85,7 @@ class View(Component):
         return region
     
     def process_event(self, event):
+        # print(f"{self}.process_event({event})")
         # Handle all mouse events
         if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
             new_hover_child = None
@@ -98,6 +99,8 @@ class View(Component):
                     converted_event = event
                     converted_event.pos, converted_event.parent_pos = local_pos, event.pos
                     break
+            
+            # print(f"{self}'s NEW HOVER CHILD: {new_hover_child}")
 
             # Pass mouse-motion events only to the affected child and handle hover changes
             if event.type == pygame.MOUSEMOTION:
@@ -108,17 +111,11 @@ class View(Component):
                     pass
                 elif self.hover_child is None:
                     new_hover_child.set_ui_state("hover", True)
-                    # if new_hover_child.rerender_on_hover:
-                    #     new_hover_child.run_hook("TRIGGER_RERENDER")
                 elif new_hover_child is None:
                     self.hover_child.set_ui_state("hover", False)
-                    # if self.hover_child.rerender_on_hover:
-                    #     self.hover_child.run_hook("TRIGGER_RERENDER")
                 elif self.hover_child is not new_hover_child:
                     self.hover_child.set_ui_state("hover", False)
                     new_hover_child.set_ui_state("hover", True)
-                    # if self.hover_child.rerender_on_hover or new_hover_child.rerender_on_hover:
-                    #     new_hover_child.run_hook("TRIGGER_RERENDER")
                 self.hover_child = new_hover_child
 
             # Pass mouse-button-down event only to the affected child and handle press changes
@@ -128,9 +125,6 @@ class View(Component):
                 # handle press changes
                 if event.button == 1 and new_hover_child is not None:
                     new_hover_child.set_ui_state("press", True)
-                    # new_hover_child.ui_state["press"] = True
-                    # if new_hover_child.rerender_on_press:
-                    #     new_hover_child.run_hook("TRIGGER_RERENDER")
                     self.press_child = new_hover_child
         
             # Pass mouse-button-up events only to the currently pressed child (if it exists) and handle press changes
@@ -140,9 +134,6 @@ class View(Component):
                 # handle press changes
                 if event.button == 1 and self.press_child is not None:
                     new_hover_child.set_ui_state("press", False)
-                    # self.press_child.ui_state["press"] = False
-                    # if self.press_child.rerender_on_press:
-                    #     self.press_child.run_hook("TRIGGER_RERENDER")
                     self.press_child = None
 
         # Pass all other event types to all children

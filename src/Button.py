@@ -30,6 +30,8 @@ class Button(Text):
         self.on_click = on_click
     
     def process_event(self, event):
+        super().process_event(event)
+
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             if self.ui_state["press"]:
                 self.on_click(self, event)
