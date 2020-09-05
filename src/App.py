@@ -14,6 +14,7 @@ class App:
         self.alive = False
     
     def update_screen(self):
+        # print("RERENDER")
         self.hoster.render_onto(self.screen)
         pygame.display.update()
     

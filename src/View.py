@@ -38,31 +38,11 @@ class View(Component):
         self.hover_child = None
         self.press_child = None
     
-    def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
+    def render_children_onto(self, surf, region=None):
         if region is None:
             region = surf.get_rect()
         
-        # adjust region to account for margins
-        region = pygame.Rect(
-            region.left + self.margins[0],
-            region.top + self.margins[1],
-            region.width - (self.margins[0] + self.margins[2]),
-            region.height - (self.margins[1] + self.margins[3]),
-        )
-
-        if self.border_width > 0:
-            pygame.draw.rect(                                   # fill background
-                surf, self.background_color, region,
-                width=0, border_radius=self.border_radius
-            )
-            pygame.draw.rect(                                   # draw border
-                surf, self.border_color, region,
-                width=self.border_width, border_radius=self.border_radius
-            )
-        else:
-            surf.fill(self.background_color, region)            # fill background
-        
-        # render all children (on top)
+        # render all children
         self.child_regions_cache = []                                   # clear cache
         for child in self.children:
             child_region = pygame.Rect(
@@ -80,13 +60,61 @@ class View(Component):
 
             self.child_regions_cache.append((child, child_region))      # save in cache
             child.render_onto(surf, child_region_abs)
+    
+    def render_border_onto(self, surf, region=None):
+        if region is None:
+            region = surf.get_rect()
+        
+        if self.border_width > 0:
+            pygame.draw.rect(                                   # draw border
+                surf, self.border_color, region,
+                width=self.border_width, border_radius=self.border_radius
+            )
+    
+    def render_onto(
+        self,
+        surf: pygame.Surface,
+        region: pygame.Rect = None,
+        render_children=True,
+        render_border=True
+    ):
+        if region is None:
+            region = surf.get_rect()
+        
+        # adjust region to account for margins
+        region = pygame.Rect(
+            region.left + self.margins[0],
+            region.top + self.margins[1],
+            region.width - (self.margins[0] + self.margins[2]),
+            region.height - (self.margins[1] + self.margins[3]),
+        )
+
+        if self.border_width > 0:
+            pygame.draw.rect(                                   # fill background
+                surf, self.background_color, region,
+                width=0, border_radius=self.border_radius
+            )
+        else:
+            surf.fill(self.background_color, region)            # fill background
+        
+        # render all children (on top)
+        if render_children:
+            self.render_children_onto(surf, region)
+        
+        # render border (on top)
+        if render_border:
+            self.render_border_onto(surf, region)
 
         # return the affected region
         return region
     
     def process_event(self, event):
-        # Handle all mouse events
-        if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
+        # Handle all mouse events (excluding scroll wheel - see https://github.com/pygame/pygame/issues/682)
+        if event.type in (
+            pygame.MOUSEMOTION,
+            pygame.MOUSEBUTTONDOWN,
+            pygame.MOUSEBUTTONUP,
+        ):
             new_hover_child = None
 
             # find new hover child
@@ -113,6 +141,7 @@ class View(Component):
                 elif self.hover_child is not new_hover_child:
                     self.hover_child.set_ui_state("hover", False)
                     new_hover_child.set_ui_state("hover", True)
+                
                 self.hover_child = new_hover_child
 
             # Pass mouse-button-down event only to the affected child and handle press changes
@@ -129,9 +158,13 @@ class View(Component):
                 if self.press_child is not None:
                     self.press_child.process_event(event)   # TODO: pass converted_event (if necessary)
                 # handle press changes
-                if event.button == 1 and self.press_child is not None:
-                    new_hover_child.set_ui_state("press", False)
-                    self.press_child = None
+                if event.button == 1:
+                    self.set_ui_state("press", False)
+
+        elif event.type == pygame.MOUSEWHEEL:
+            # Pass mouse-wheel event only to the currently hovered child (if it exists)
+            if self.hover_child is not None:
+                self.hover_child.process_event(event)
 
         # Pass all other event types to all children
         else:

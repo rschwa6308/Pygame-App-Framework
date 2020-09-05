@@ -55,6 +55,9 @@ class Component:
     
     def set_ui_state(self, field_name: str, val: bool):
         """Set the value of a given UI state field"""
+
+        # print(f"{self}.set_ui_state({field_name}, {val})")
+
         if field_name not in self.ui_state:
             raise ValueError(f"Field name \"{field_name}\" is not a valid ui_state field")
 
@@ -62,12 +65,17 @@ class Component:
 
         self.ui_state[field_name] = val
 
-        # If removing hover, clear hover child and recursively remove hover from all children
+        # If removing hover, clear hover child and recursively remove hover from hover child
         if field_name == "hover" and not val:
-            self.hover_child = None
-            for child in self.children:
-                child.set_ui_state("hover", False)
+            if self.hover_child:
+                self.hover_child.set_ui_state("hover", False)
+                self.hover_child = None
+        
+         # If removing hover, clear press child and recursively remove press from press child
+        if field_name == "press" and not val:
+            if self.press_child:
+                self.press_child.set_ui_state("press", False)
+                self.press_child = None
 
         if rerender:
-            print("RERENDER!")
             self.run_hook("TRIGGER_RERENDER")

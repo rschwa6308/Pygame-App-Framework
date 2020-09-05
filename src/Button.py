@@ -33,10 +33,12 @@ class Button(Text):
         super().process_event(event)
 
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            if self.ui_state["press"]:
-                self.on_click(self, event)
+            # We can trust that the parent will only pass valid events
+            self.on_click(self, event)
     
     def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
+        # print(f"{self.text}: {self.ui_state['hover']}")
+
         temp = self.background_color
 
         if self.ui_state["press"]:

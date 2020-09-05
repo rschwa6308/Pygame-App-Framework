@@ -1,4 +1,5 @@
 from App import *
+from ScrollView import *
 from Colors import *
 
 from random import choice
@@ -19,6 +20,18 @@ level_screens = [
             font_kwargs={"bold": True, "italic": True},
             parent_dest=(0.1, 0.1, 0.1, 0.1),   # position within parent
             on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "level_select"),
+        ),
+        ScrollView(
+            parent_dest=(0.6, 0.3, 0.3, 0.5),
+            canvas_size_factors=(1.0, 3.0),
+            border_width=3,
+            scroll_bar_x = False,
+            scroll_bar_y = True,
+            children=[
+                View(1, 1, GREEN, parent_dest=(0.1, 0.0, 0.2, 1.0), margins=(0, 10, 0, 10)),
+                Button(1, 1, RED, parent_dest=(0.4, 0.1, 0.2, 0.2), on_click=lambda s, e: print("HI")),
+                View(1, 1, BLUE, parent_dest=(0.4, 0.4, 0.2, 0.2))
+            ]
         )
     ])
     for x in range(NUM_LEVELS)
