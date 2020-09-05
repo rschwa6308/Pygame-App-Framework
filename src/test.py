@@ -1,5 +1,6 @@
 from App import *
 from ScrollView import *
+from Image import *
 from Colors import *
 
 from random import choice
@@ -11,6 +12,11 @@ NUM_LEVELS = 15
 LEVELS_PER_ROW = 5
 
 
+# Load test images
+test_assets_dir = os.path.join(os.path.dirname(__file__), "test_assets")
+test_image_source = pygame.image.load(os.path.join(test_assets_dir, "smile.png"))
+
+
 level_screens = [
     Text(1, 1, choice(ACCENTS), f"Level #{x + 1}", children=[
         Button(
@@ -18,19 +24,37 @@ level_screens = [
             border_width=3,
             border_radius=10,
             font_kwargs={"bold": True, "italic": True},
-            parent_dest=(0.1, 0.1, 0.1, 0.1),   # position within parent
+            dest=(0.1, 0.1, 0.1, 0.1),   # position within parent
             on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "level_select"),
         ),
         ScrollView(
-            parent_dest=(0.6, 0.3, 0.3, 0.5),
+            dest=(0.6, 0.3, 0.35, 0.5),
             canvas_size_factors=(1.0, 3.0),
             border_width=3,
-            scroll_bar_x = False,
-            scroll_bar_y = True,
             children=[
-                View(1, 1, GREEN, parent_dest=(0.1, 0.0, 0.2, 1.0), margins=(0, 10, 0, 10)),
-                Button(1, 1, RED, parent_dest=(0.4, 0.1, 0.2, 0.2), on_click=lambda s, e: print("HI")),
-                View(1, 1, BLUE, parent_dest=(0.4, 0.4, 0.2, 0.2))
+                View(1, 1, GREEN, dest=(0.1, 0.0, 0.2, 1.0), margins=(0, 10, 0, 10)),
+                Button(1, 1, RED, dest=(0.4, 0.1, 0.2, 0.2), text="!", on_click=lambda s, e: print("HI")),
+                View(1, 1, BLUE, dest=(0.4, 0.4, 0.2, 0.2)),
+                View(1, 1, MAGENTA, dest=(0.8, 0.6, 0.2, 0.2)),
+                ScrollView(
+                    border_width=1,
+                    dest=(0.4, 0.7, 0.3, 0.2),
+                    canvas_size_factors=(2.0, 2.0),
+                    children=[
+                        Image(image=test_image_source)
+                    ]
+                )
+            ]
+        ),
+        ScrollView(
+            dest=(0.1, 0.7, 0.4, 0.2),
+            canvas_size_factors=(2.0, 1.0),
+            border_width=3,
+            children=[
+                Text(
+                    text=" Hello, World! ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ",
+                    font_kwargs={"underline": True}
+                )
             ]
         )
     ])
@@ -62,7 +86,7 @@ num_rows = NUM_LEVELS // LEVELS_PER_ROW
 level_select_screen = GridView([
     [Text(5, 0.5, text="Level Select")]
 ] + [
-    level_select_buttons[row * LEVELS_PER_ROW:(row + 1) * LEVELS_PER_ROW]
+    level_select_buttons[row * LEVELS_PER_ROW:(row + 1) * LEVELS_PER_ROW]   
     for row in range(NUM_LEVELS // LEVELS_PER_ROW)
 ])
 
@@ -83,14 +107,12 @@ app = App(hoster)
 app.run()
 
 
-
-
-# TODO: test buttons nested within multiple views
-
-
-
-
-        
-
-
-
+# TODO:
+#   - view fixed aspect ratio
+#   - view min/max width/height
+#   - view padding
+#   - ListView? (maybe not necessary since list comprehension works so well)
+#   - better support of TRANSPARENT backgrounds
+#   - optionally different ScrollView behavior where children size matches parent's siblings (aunts/uncles ?)
+#     (sort of breaks the whole paradigm so maybe not)
+#   - click+drag scroll bars (might be hard since currently no support for click+drag anywhere)

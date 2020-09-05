@@ -17,7 +17,7 @@ class View(Component):
         border_width: int = 0,
         border_radius: int = 1,
         margins: Tuple[int, int, int, int] = (0, 0, 0, 0),  # (N, E, S, W)
-        parent_dest: Tuple[float, float, float, float] = (0, 0, 1, 1),            # (L, T, W, H) (floating point in [0, 1]),
+        dest: Tuple[float, float, float, float] = (0, 0, 1, 1),            # (L, T, W, H) (floating point in [0, 1]),
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -28,7 +28,7 @@ class View(Component):
         self.border_width = border_width
         self.border_radius = border_radius
         self.margins = margins
-        self.parent_dest = parent_dest
+        self.dest = dest
 
         self.child_regions_cache = []   # format (Component, Rect)
         self.ui_state = {
@@ -46,16 +46,16 @@ class View(Component):
         self.child_regions_cache = []                                   # clear cache
         for child in self.children:
             child_region = pygame.Rect(
-                region.width * child.parent_dest[0],
-                region.height * child.parent_dest[1],
-                region.width * child.parent_dest[2],
-                region.height * child.parent_dest[3]
+                region.width * child.dest[0],
+                region.height * child.dest[1],
+                region.width * child.dest[2],
+                region.height * child.dest[3]
             )
             child_region_abs = pygame.Rect(
-                region.left + region.width * child.parent_dest[0],
-                region.top + region.height * child.parent_dest[1],
-                region.width * child.parent_dest[2],
-                region.height * child.parent_dest[3]
+                region.left + region.width * child.dest[0],
+                region.top + region.height * child.dest[1],
+                region.width * child.dest[2],
+                region.height * child.dest[3]
             )
 
             self.child_regions_cache.append((child, child_region))      # save in cache
@@ -119,12 +119,19 @@ class View(Component):
 
             # find new hover child
             for child, region in self.child_regions_cache:
-                if region.collidepoint(event.pos):
+                adjusted_pos = (
+                    event.pos[0] + self.collision_offset[0],
+                    event.pos[1] + self.collision_offset[1]
+                )
+                if region.collidepoint(adjusted_pos):
                     new_hover_child = child
                     # convert `pos` to local coords and include original as `parent_pos` and process event
-                    local_pos = (event.pos[0] - region.left, event.pos[1] - region.top)
+                    local_pos = (
+                        adjusted_pos[0] - region.left,
+                        adjusted_pos[1] - region.top
+                    )
                     converted_event = event
-                    converted_event.pos, converted_event.parent_pos = local_pos, event.pos
+                    converted_event.pos, converted_event.parent_pos = local_pos, adjusted_pos
                     break
             
             # Pass mouse-motion events only to the affected child and handle hover changes

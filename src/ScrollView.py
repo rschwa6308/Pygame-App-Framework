@@ -6,10 +6,10 @@ class ScrollView(View):
 
     # portion of canvas to scroll with 1 scroll event
     scroll_speed_x = 0.10
-    scroll_speed_y = 0.03
+    scroll_speed_y = 0.05
 
     scroll_bar_color = BLACK
-    scroll_bar_opacity = 0.75
+    scroll_bar_opacity = 0.5
     scroll_bar_width = 8
     scroll_bar_padding = 5
 
@@ -19,15 +19,23 @@ class ScrollView(View):
         y_flex: int = 1,
         background_color: Tuple[int, int, int] = default_background_color,
         canvas_size_factors: Tuple[float, float] = (1.0, 1.0),
-        scroll_bar_x: bool = False,
-        scroll_bar_y: bool = True,
+        scroll_bar_x: bool = None,
+        scroll_bar_y: bool = None,
         **kwargs
     ):
         super().__init__(x_flex, y_flex, background_color, **kwargs)
 
         self.canvas_size_factors = canvas_size_factors
-        self.scroll_bar_x = scroll_bar_x
-        self.scroll_bar_y = scroll_bar_y
+
+        if scroll_bar_x is None:
+            self.scroll_bar_x = canvas_size_factors[0] > 1.0
+        else:
+            self.scroll_bar_x = scroll_bar_x
+
+        if scroll_bar_y is None:
+            self.scroll_bar_y = canvas_size_factors[1] > 1.0
+        else:
+            self.scroll_bar_y = scroll_bar_y
 
         # internal coordinates (in [0, 1]^4) representing the area that is currently visible
         # (L, T, W, H)
@@ -37,22 +45,25 @@ class ScrollView(View):
             1 / canvas_size_factors[1]
         ]
         self.canvas_cache = None
+
+        self.collision_offset = (0, 0)
     
     def process_event(self, event):
         if event.type == pygame.MOUSEWHEEL:
-            old_scroll_area = list(self.scroll_area)    # copy
-            d = (-event.x, event.y)
-            for i in (0, 1):
-                self.scroll_area[i] -= d[i] * (self.scroll_speed_x, self.scroll_speed_y)[i]
-                if d[i] > 0:
-                    self.scroll_area[i] = max(self.scroll_area[i], 0.0)
-                else:
-                    self.scroll_area[i] = min(self.scroll_area[i], 1 - self.scroll_area[2+i])
-            
-            if self.scroll_area != old_scroll_area:
-                self.run_hook("TRIGGER_RERENDER")
-        
-        # TODO: account for scroll offset in event here
+            # prevent double-scrolling of nested ScrollViews (only scroll the child)
+            # TODO: default to scrolling the parent (i.e. self) when the child is maxed/mined out (?)
+            if not isinstance(self.hover_child, ScrollView):
+                old_scroll_area = list(self.scroll_area)    # copy
+                d = (-event.x, event.y)
+                for i in (0, 1):
+                    self.scroll_area[i] -= d[i] * (self.scroll_speed_x, self.scroll_speed_y)[i]
+                    if d[i] > 0:
+                        self.scroll_area[i] = max(self.scroll_area[i], 0.0)
+                    else:
+                        self.scroll_area[i] = min(self.scroll_area[i], 1 - self.scroll_area[2+i])
+                
+                if self.scroll_area != old_scroll_area:
+                    self.run_hook("TRIGGER_RERENDER")
 
         super().process_event(event)
     
@@ -79,6 +90,9 @@ class ScrollView(View):
             canvas_rect.width * self.scroll_area[2],
             canvas_rect.height * self.scroll_area[3],
         )
+
+        # update collision offset value
+        self.collision_offset = blit_area.topleft
 
         surf.blit(canvas, region, area=blit_area)
 

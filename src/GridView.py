@@ -23,10 +23,10 @@ class GridView(View):
 
         self.flex_map, self.total_x_flex, self.total_y_flex = flex_map, total_x_flex, total_y_flex
     
-    def compute_parent_dests(self):
+    def compute_dests(self):
         for row, flex_map_row in zip(self.layout, self.flex_map):
             for child, flex_map_child in zip(row, flex_map_row):
-                child.parent_dest = (
+                child.dest = (
                     flex_map_child[0] / self.total_x_flex,
                     flex_map_child[1] / self.total_y_flex,
                     flex_map_child[2] / self.total_x_flex,
@@ -52,8 +52,8 @@ class GridView(View):
 
         self.compute_flex_map()
 
-        # calculate children's `parent_dest`s based on flex_map
-        self.compute_parent_dests()
+        # calculate children's `dest`s based on flex_map
+        self.compute_dests()
 
 
 if __name__ == "__main__":

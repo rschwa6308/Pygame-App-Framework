@@ -1,9 +1,10 @@
 from GridView import *
+from ScrollView import *
 from Hoster import *
 from App import *
 
 
-NUM_LEVELS = 24
+NUM_LEVELS = 48
 LEVELS_PER_ROW = 6
 
 
@@ -41,7 +42,7 @@ menu_screen = View(
             Button(1, 2, text="Credits", **menu_button_style, on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "credits")),
             Button(1, 2, text="Quit", **menu_button_style, on_click=lambda self, event: self.run_hook("QUIT_APP"))
         ]
-    ], parent_dest=(0.3, 0.0, 0.4, 0.9))]
+    ], dest=(0.3, 0.0, 0.4, 0.9))]
 )
 
 
@@ -72,15 +73,18 @@ level_select_screen = View(children=[
     Text(
         LEVELS_PER_ROW, 0.5,
         text="Levels",
-        parent_dest=(0.25, 0.0, 0.5, 0.1),
-        **menu_h2_style),
-    GridView(
-        level_select_layout,
-        parent_dest=(0.1, 0.1, 0.8, 0.7)
+        dest=(0.25, 0.0, 0.5, 0.1),
+        **menu_h2_style
+    ),
+    # TODO: some sort of border or bg-color change to differentiate this region
+    ScrollView(
+        children=[GridView(level_select_layout, margins=(12, 0)*2)],
+        canvas_size_factors = (1.0, 2.0),
+        dest=(0.1, 0.1, 0.8, 0.7),
     ),
     Button(
         text="Back",
-        parent_dest=(0.4, 0.85, 0.2, 0.1),
+        dest=(0.4, 0.85, 0.2, 0.1),
         on_click=lambda self, event: self.run_hook("NAVIGATE_BACK"),
         **menu_button_style
     )

@@ -24,6 +24,9 @@ class Component:
         # Hooks are functions belonging to objects higher up in the tree (e.g. navigation actions)
         self.hooks = {}
 
+        # Internal offset for cursor collision (e.g. scroll position)
+        self.collision_offset = (0, 0)
+
     def render_onto(self, surf: pygame.Surface):
         """Render the contents of self to the given surface"""
         raise NotImplementedError("Component subclass must implement the render_onto() method")
