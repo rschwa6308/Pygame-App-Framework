@@ -1,7 +1,10 @@
-from Text import *
-from Fonts import *
+from typing import Tuple, Callable, Any
+import pygame
 
-from typing import Callable, Any
+from view import View
+from text import Text
+from colors import *
+
 
 class Button(Text):
     default_bg_color = WHITE
@@ -46,7 +49,6 @@ class Button(Text):
         elif self.ui_state["hover"]:
             self.bg_color = tuple(x * self.hover_opacity for x in temp)
 
-        
-        region = super().render_onto(surf, region)
+        super().render_onto(surf, region)
         self.bg_color = temp
 

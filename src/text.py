@@ -1,7 +1,10 @@
-from View import *
-from Fonts import *
+from typing import Any, Tuple, Dict
+import pygame
 
-from typing import Dict, Any
+from view import View
+from fonts import render_text_to
+from colors import *
+
 
 class Text(View):
     default_bg_color = WHITE
@@ -14,17 +17,26 @@ class Text(View):
         bg_color: Tuple[int, int, int] = default_bg_color,
         text: str = "",
         text_color: Tuple[int, int, int] = default_text_color,
-        font_kwargs: Dict[str, Any] = {},
+        font_kwargs=None,
         **kwargs
         # TODO: add font options here
     ):
         super().__init__(x_flex, y_flex, bg_color, **kwargs)
-        
+
+        if font_kwargs is None:
+            font_kwargs = {}
+
         self.text = text
         self.text_color = text_color
         self.font_kwargs = font_kwargs
-    
-    def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
+
+    def render_onto(
+        self,
+        surf: pygame.Surface,
+        region: pygame.Rect = None,
+        render_children=True,
+        render_border=True
+    ):
         region = super().render_onto(surf, region)
         render_text_to(surf, "CENTER", self.text, region=region, fgcolor=self.text_color, **self.font_kwargs)
         return region

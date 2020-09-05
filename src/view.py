@@ -1,7 +1,8 @@
-from typing import Tuple, Sequence
+from typing import Tuple
+import pygame
 
-from Component import *
-from Colors import *
+from component import Component
+from colors import *
 
 
 class View(Component):
@@ -31,10 +32,6 @@ class View(Component):
         self.dest = dest
 
         self.child_regions_cache = []   # format (Component, Rect)
-        self.ui_state = {
-            "hover": False,
-            "press": False
-        }
         self.hover_child = None
         self.press_child = None
     

@@ -1,13 +1,13 @@
 import pygame.freetype
 
-
 DEFAULT_FONT_NAME = "Arial"
 DEFAULT_FONT_SIZE = 24
-
 
 pygame.freetype.init()
 
 font_cache = {}
+
+
 def get_font(font_name=DEFAULT_FONT_NAME, font_size=DEFAULT_FONT_SIZE, bold=False, italic=False, underline=False):
     """Get a `Font` object (cached)"""
     key = f"{font_name}-{font_size}"
@@ -26,8 +26,8 @@ def get_font(font_name=DEFAULT_FONT_NAME, font_size=DEFAULT_FONT_SIZE, bold=Fals
 
 
 def render_text_to(
-    surf, dest, text, region=None,
-    font_name=DEFAULT_FONT_NAME, font_size=DEFAULT_FONT_SIZE, bold=False, italic=False, underline=False, **kwargs
+        surf, dest, text, region=None,
+        font_name=DEFAULT_FONT_NAME, font_size=DEFAULT_FONT_SIZE, bold=False, italic=False, underline=False, **kwargs
 ):
     """Render the given text onto the given surface.
     Argument `dest` can be either coordinates (local to region) or "CENTER"."""

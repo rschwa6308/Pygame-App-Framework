@@ -1,7 +1,10 @@
-from GridView import *
-from ScrollView import *
-from Hoster import *
-from App import *
+from view import View
+from gridview import GridView
+from scrollview import ScrollView
+from button import Button
+from text import Text
+from hoster import Hoster
+from app import App
 
 
 NUM_LEVELS = 48
@@ -36,11 +39,27 @@ menu_button_style = {
 menu_screen = View(
     children=[GridView([
         [Text(2, 3, text="Arithma", **menu_h1_style)],
-        [Button(2, 2, text="Levels", **menu_button_style, on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "level_select"))],
-        [Button(2, 2, text="Settings", **menu_button_style, on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "settings"))],
+        [Button(
+            2, 2, text="Levels",
+            on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "level_select"),
+            **menu_button_style
+        )],
+        [Button(
+            2, 2, text="Settings",
+            on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "settings"),
+            **menu_button_style
+        )],
         [
-            Button(1, 2, text="Credits", **menu_button_style, on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "credits")),
-            Button(1, 2, text="Quit", **menu_button_style, on_click=lambda self, event: self.run_hook("QUIT_APP"))
+            Button(
+                1, 2, text="Credits",
+                on_click=lambda self, event: self.run_hook("NAVIGATE_TO", "credits"),
+                **menu_button_style
+            ),
+            Button(
+                1, 2, text="Quit",
+                on_click=lambda self, event: self.run_hook("QUIT_APP"),
+                **menu_button_style
+            )
         ]
     ], dest=(0.3, 0.0, 0.4, 0.9))]
 )

@@ -1,11 +1,16 @@
-from App import *
-from ScrollView import *
-from Image import *
-from Colors import *
-
+import os
 from random import choice
+import pygame
 
-
+from view import View
+from gridview import GridView
+from scrollview import ScrollView
+from button import Button
+from text import Text
+from image import Image
+from hoster import Hoster
+from app import App
+from colors import *
 
 
 NUM_LEVELS = 15
@@ -36,14 +41,15 @@ level_screens = [
                 Button(bg_color=RED, dest=(0.4, 0.1, 0.2, 0.2), text="!", on_click=lambda s, e: print("HI")),
                 View(bg_color=BLUE, dest=(0.4, 0.4, 0.2, 0.2)),
                 View(bg_color=MAGENTA, dest=(0.8, 0.6, 0.2, 0.2)),
-                ScrollView(
+                # TODO: currently testing deeply nested scrollview event behavior
+                View(children=[ScrollView(
                     border_width=1,
                     dest=(0.4, 0.7, 0.3, 0.2),
                     canvas_size_factors=(2.0, 2.0),
                     children=[
                         Image(image=test_image_source)
                     ]
-                )
+                )])
             ]
         ),
         ScrollView(
@@ -84,7 +90,7 @@ for x, button in enumerate(level_select_buttons):
 
 num_rows = NUM_LEVELS // LEVELS_PER_ROW
 level_select_screen = GridView([
-    [Text(5, 0.5, text="Level Select")]
+    [Text(5, 1, text="Level Select")]
 ] + [
     level_select_buttons[row * LEVELS_PER_ROW:(row + 1) * LEVELS_PER_ROW]   
     for row in range(NUM_LEVELS // LEVELS_PER_ROW)

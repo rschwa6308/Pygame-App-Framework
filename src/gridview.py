@@ -1,46 +1,25 @@
-from typing import Sequence
+from typing import Tuple, Sequence
+import pygame
 
-from View import *
-from Colors import *
+from component import Component
+from view import View
+from colors import *
+
 
 class GridView(View):
     default_bg_color = WHITE
 
-    def compute_flex_map(self):
-        total_x_flex = max(sum(child.x_flex for child in row) for row in self.layout) if self.layout else 1
-        total_y_flex = sum(max(child.y_flex for child in row) for row in self.layout) if self.layout else 1
-        
-        flex_map = []
-        y = 0
-        for row in self.layout:
-            flex_map_row = []
-            x = 0
-            for child in row:
-                flex_map_row.append((x, y, child.x_flex, child.y_flex))
-                x += child.x_flex
-            flex_map.append(flex_map_row)
-            y += max(child.y_flex for child in row)
-
-        self.flex_map, self.total_x_flex, self.total_y_flex = flex_map, total_x_flex, total_y_flex
-    
-    def compute_dests(self):
-        for row, flex_map_row in zip(self.layout, self.flex_map):
-            for child, flex_map_child in zip(row, flex_map_row):
-                child.dest = (
-                    flex_map_child[0] / self.total_x_flex,
-                    flex_map_child[1] / self.total_y_flex,
-                    flex_map_child[2] / self.total_x_flex,
-                    flex_map_child[3] / self.total_y_flex
-                )
-
     def __init__(
         self,
-        layout: Sequence[Sequence[Component]] = [],
+        layout: Sequence[Sequence[View]] = None,
         x_flex: int = 1,
         y_flex: int = 1,
         bg_color: Tuple[int, int, int] = default_bg_color,
         **kwargs
     ):
+        if layout is None:
+            layout = []
+
         children = [child for row in layout for child in row]
 
         if not all(isinstance(child, Component) for child in children):
@@ -54,6 +33,33 @@ class GridView(View):
 
         # calculate children's `dest`s based on flex_map
         self.compute_dests()
+
+    def compute_flex_map(self):
+        total_x_flex = max(sum(child.x_flex for child in row) for row in self.layout) if self.layout else 1
+        total_y_flex = sum(max(child.y_flex for child in row) for row in self.layout) if self.layout else 1
+
+        flex_map = []
+        y = 0
+        for row in self.layout:
+            flex_map_row = []
+            x = 0
+            for child in row:
+                flex_map_row.append((x, y, child.x_flex, child.y_flex))
+                x += child.x_flex
+            flex_map.append(flex_map_row)
+            y += max(child.y_flex for child in row)
+
+        self.flex_map, self.total_x_flex, self.total_y_flex = flex_map, total_x_flex, total_y_flex
+
+    def compute_dests(self):
+        for row, flex_map_row in zip(self.layout, self.flex_map):
+            for child, flex_map_child in zip(row, flex_map_row):
+                child.dest = (
+                    flex_map_child[0] / self.total_x_flex,
+                    flex_map_child[1] / self.total_y_flex,
+                    flex_map_child[2] / self.total_x_flex,
+                    flex_map_child[3] / self.total_y_flex
+                )
 
 
 if __name__ == "__main__":

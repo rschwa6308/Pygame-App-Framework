@@ -1,8 +1,11 @@
-from Hoster import *
-from GridView import *
-from Button import *
-from Text import *
-from Image import *
+import pygame
+
+from view import View
+from gridview import GridView
+from button import Button
+from text import Text
+from hoster import Hoster
+
 
 class App:
     default_target_fps = 60
@@ -12,15 +15,15 @@ class App:
         self.hoster.bind_hook("TRIGGER_RERENDER", self.update_screen, bind_to_children=True)
         self.hoster.bind_hook("QUIT_APP", self.quit, bind_to_children=True)
         self.alive = False
-    
+
     def update_screen(self):
         # print("RERENDER")
         self.hoster.render_onto(self.screen)
         pygame.display.update()
-    
+
     def quit(self):
         self.alive = False
-    
+
     def run(self, screen_dims=(800, 600), target_fps=default_target_fps):
         self.alive = True
         self.screen = pygame.display.set_mode(screen_dims, pygame.RESIZABLE)

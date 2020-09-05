@@ -1,5 +1,6 @@
-from View import *
-from Colors import *
+import pygame
+
+from view import View
 
 
 # Functions take `image_size` and `region_size` and return `target_size`
@@ -33,7 +34,13 @@ class Image(View):
         self.image_size = image.get_size()
         self.scaled_image = None
 
-    def render_onto(self, surf, region=None):
+    def render_onto(
+        self,
+        surf: pygame.Surface,
+        region: pygame.Rect = None,
+        render_children=True,
+        render_border=True
+    ):
         # scale `self.image` to fill the given `region`
         target_size = SCALE_MODES[self.scale_mode](self.image_size, region.size)
         if self.scaled_image is None or\

@@ -1,6 +1,8 @@
 from typing import Dict
+import pygame
 
-from Component import *
+from component import Component
+
 
 class Hoster(Component):
     def __init__(self, component_id_map: Dict[str, Component], start_id: str):

@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Tuple, Sequence
 
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"   # bruh
@@ -17,8 +16,11 @@ class Component:
 
     def __init__(
         self,
-        children: Sequence[Component] = []
+        children=None
     ):
+        if children is None:
+            children = []
+
         self.children = children
 
         # Hooks are functions belonging to objects higher up in the tree (e.g. navigation actions)
@@ -26,6 +28,11 @@ class Component:
 
         # Internal offset for cursor collision (e.g. scroll position)
         self.collision_offset = (0, 0)
+
+        self.ui_state = {
+            "hover": False,
+            "press": False
+        }
 
     def render_onto(self, surf: pygame.Surface):
         """Render the contents of self to the given surface"""
@@ -53,9 +60,9 @@ class Component:
         """Run a previously bound hook (with a given name)"""
         if name not in self.hooks:
             raise ValueError(f"A \"{name}\" hook has not yet been bound to this component")
-        
+
         self.hooks[name](*args, **kwargs)
-    
+
     def set_ui_state(self, field_name: str, val: bool):
         """Set the value of a given UI state field"""
 
@@ -73,7 +80,7 @@ class Component:
             if self.hover_child:
                 self.hover_child.set_ui_state("hover", False)
                 self.hover_child = None
-        
+
          # If removing hover, clear press child and recursively remove press from press child
         if field_name == "press" and not val:
             if self.press_child:

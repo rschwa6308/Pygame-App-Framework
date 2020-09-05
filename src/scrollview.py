@@ -1,4 +1,8 @@
-from View import *
+from typing import Tuple
+import pygame
+
+from view import View
+from colors import *
 
 
 class ScrollView(View):
@@ -51,6 +55,7 @@ class ScrollView(View):
     def process_event(self, event):
         if event.type == pygame.MOUSEWHEEL:
             # prevent double-scrolling of nested ScrollViews (only scroll the child)
+            # TODO: how to handle when scroll view is grandchild?
             # TODO: default to scrolling the parent (i.e. self) when the child is maxed/mined out (?)
             if not isinstance(self.hover_child, ScrollView):
                 old_scroll_area = list(self.scroll_area)    # copy
@@ -67,7 +72,13 @@ class ScrollView(View):
 
         super().process_event(event)
     
-    def render_onto(self, surf: pygame.Surface, region: pygame.Rect = None):
+    def render_onto(
+        self,
+        surf: pygame.Surface,
+        region: pygame.Rect = None,
+        render_children=True,
+        render_border=True
+    ):
         region = super().render_onto(surf, region, render_children=False, render_border=False)
         
         # create canvas surface (cached)
@@ -118,7 +129,7 @@ class ScrollView(View):
             temp_surf = pygame.Surface(region.size)
             temp_surf.fill(WHITE)
             temp_surf.set_colorkey(WHITE)
-            temp_surf.set_alpha(255 * self.scroll_bar_opacity)
+            temp_surf.set_alpha(int(255 * self.scroll_bar_opacity))
             pygame.draw.rect(
                 temp_surf, self.scroll_bar_color, rect,
                 border_radius=self.scroll_bar_width
