@@ -32,10 +32,10 @@ level_screens = [
             canvas_size_factors=(1.0, 3.0),
             border_width=3,
             children=[
-                View(1, 1, GREEN, dest=(0.1, 0.0, 0.2, 1.0), margins=(0, 10, 0, 10)),
-                Button(1, 1, RED, dest=(0.4, 0.1, 0.2, 0.2), text="!", on_click=lambda s, e: print("HI")),
-                View(1, 1, BLUE, dest=(0.4, 0.4, 0.2, 0.2)),
-                View(1, 1, MAGENTA, dest=(0.8, 0.6, 0.2, 0.2)),
+                View(bg_color=GREEN, dest=(0.1, 0.0, 0.2, 1.0), margins=(0, 10, 0, 10)),
+                Button(bg_color=RED, dest=(0.4, 0.1, 0.2, 0.2), text="!", on_click=lambda s, e: print("HI")),
+                View(bg_color=BLUE, dest=(0.4, 0.4, 0.2, 0.2)),
+                View(bg_color=MAGENTA, dest=(0.8, 0.6, 0.2, 0.2)),
                 ScrollView(
                     border_width=1,
                     dest=(0.4, 0.7, 0.3, 0.2),
@@ -64,7 +64,7 @@ level_screens = [
 
 level_select_buttons = [
     Button(
-        background_color=level.background_color,
+        bg_color=level.bg_color,
         text=f"Level #{x + 1}",
         text_color=WHITE,
         font_kwargs={"bold": True},

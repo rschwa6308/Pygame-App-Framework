@@ -2,7 +2,7 @@ from View import *
 
 
 class ScrollView(View):
-    default_background_color = WHITE
+    default_bg_color = WHITE
 
     # portion of canvas to scroll with 1 scroll event
     scroll_speed_x = 0.10
@@ -17,13 +17,13 @@ class ScrollView(View):
         self,
         x_flex: int = 1,
         y_flex: int = 1,
-        background_color: Tuple[int, int, int] = default_background_color,
+        bg_color: Tuple[int, int, int] = default_bg_color,
         canvas_size_factors: Tuple[float, float] = (1.0, 1.0),
         scroll_bar_x: bool = None,
         scroll_bar_y: bool = None,
         **kwargs
     ):
-        super().__init__(x_flex, y_flex, background_color, **kwargs)
+        super().__init__(x_flex, y_flex, bg_color, **kwargs)
 
         self.canvas_size_factors = canvas_size_factors
 

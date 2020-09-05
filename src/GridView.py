@@ -4,7 +4,7 @@ from View import *
 from Colors import *
 
 class GridView(View):
-    default_background_color = WHITE
+    default_bg_color = WHITE
 
     def compute_flex_map(self):
         total_x_flex = max(sum(child.x_flex for child in row) for row in self.layout) if self.layout else 1
@@ -38,7 +38,7 @@ class GridView(View):
         layout: Sequence[Sequence[Component]] = [],
         x_flex: int = 1,
         y_flex: int = 1,
-        background_color: Tuple[int, int, int] = default_background_color,
+        bg_color: Tuple[int, int, int] = default_bg_color,
         **kwargs
     ):
         children = [child for row in layout for child in row]
@@ -46,7 +46,7 @@ class GridView(View):
         if not all(isinstance(child, Component) for child in children):
             raise ValueError(f"Invalid children argument: {children}; children must all be Components")
 
-        super().__init__(x_flex, y_flex, background_color, children=children, **kwargs)
+        super().__init__(x_flex, y_flex, bg_color, children=children, **kwargs)
         
         self.layout = layout
 

@@ -16,7 +16,7 @@ for _ in range(DEPTH):
     curr = View(
         children=[curr],
         dest=(0.1, 0.1, 0.8, 0.8),
-        background_color=random.choice(ACCENTS)
+        bg_color=random.choice(ACCENTS)
     )
 
 

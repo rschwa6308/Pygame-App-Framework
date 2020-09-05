@@ -5,14 +5,14 @@ from Colors import *
 
 
 class View(Component):
-    default_background_color = WHITE
+    default_bg_color = WHITE
     default_border_color = BLACK
 
     def __init__(
         self,
         x_flex: int = 1,
         y_flex: int = 1,
-        background_color: Tuple[int, int, int] = default_background_color,
+        bg_color: Tuple[int, int, int] = default_bg_color,
         border_color: Tuple[int, int, int] = default_border_color,
         border_width: int = 0,
         border_radius: int = 1,
@@ -23,7 +23,7 @@ class View(Component):
         super().__init__(**kwargs)
         self.x_flex = x_flex
         self.y_flex = y_flex
-        self.background_color = background_color
+        self.bg_color = bg_color
         self.border_color = border_color
         self.border_width = border_width
         self.border_radius = border_radius
@@ -91,11 +91,11 @@ class View(Component):
 
         if self.border_width > 0:
             pygame.draw.rect(                                   # fill background
-                surf, self.background_color, region,
+                surf, self.bg_color, region,
                 width=0, border_radius=self.border_radius
             )
         else:
-            surf.fill(self.background_color, region)            # fill background
+            surf.fill(self.bg_color, region)            # fill background
         
         # render all children (on top)
         if render_children:
