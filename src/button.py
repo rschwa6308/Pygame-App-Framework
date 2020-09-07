@@ -22,9 +22,9 @@ class Button(Text):
         self,
         x_flex: int = 1,
         y_flex: int = 1,
-        bg_color: Tuple[int, int, int] = default_bg_color,
+        bg_color: pygame.Color = default_bg_color,
         text: str = "",
-        text_color: Tuple[int, int, int] = default_text_color,
+        text_color: pygame.Color = default_text_color,
         # must be a function of the form (self, event) -> any
         on_click: Callable[[View, pygame.event.EventType], Any] = lambda self, event: None,
         **kwargs

@@ -9,7 +9,7 @@ class ScrollView(View):
     default_bg_color = WHITE
 
     # portion of canvas to scroll with 1 scroll event
-    scroll_speed_x = 0.10
+    scroll_speed_x = 0.08
     scroll_speed_y = 0.05
 
     scroll_bar_color = BLACK
@@ -49,15 +49,15 @@ class ScrollView(View):
             1 / canvas_size_factors[1]
         ]
         self.canvas_cache = None
-
-        self.collision_offset = (0, 0)
     
     def process_event(self, event):
+        event.flags = []
+
+        super().process_event(event)
+
         if event.type == pygame.MOUSEWHEEL:
             # prevent double-scrolling of nested ScrollViews (only scroll the child)
-            # TODO: how to handle when scroll view is grandchild?
-            # TODO: default to scrolling the parent (i.e. self) when the child is maxed/mined out (?)
-            if not isinstance(self.hover_child, ScrollView):
+            if "SCROLL_PROCESSED" not in event.flags:
                 old_scroll_area = list(self.scroll_area)    # copy
                 d = (-event.x, event.y)
                 for i in (0, 1):
@@ -68,9 +68,8 @@ class ScrollView(View):
                         self.scroll_area[i] = min(self.scroll_area[i], 1 - self.scroll_area[2+i])
                 
                 if self.scroll_area != old_scroll_area:
+                    event.flags.append("SCROLL_PROCESSED")
                     self.run_hook("TRIGGER_RERENDER")
-
-        super().process_event(event)
     
     def render_onto(
         self,
@@ -103,7 +102,8 @@ class ScrollView(View):
         )
 
         # update collision offset value
-        self.collision_offset = blit_area.topleft
+        self.collision_offset[0] += blit_area.left
+        self.collision_offset[1] += blit_area.top
 
         surf.blit(canvas, region, area=blit_area)
 

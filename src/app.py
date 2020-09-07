@@ -12,9 +12,13 @@ class App:
 
     def __init__(self, hoster: Hoster):
         self.hoster = hoster
-        self.hoster.bind_hook("TRIGGER_RERENDER", self.update_screen, bind_to_children=True)
+        self.hoster.bind_hook("TRIGGER_RERENDER", self.trigger_rerender, bind_to_children=True)
         self.hoster.bind_hook("QUIT_APP", self.quit, bind_to_children=True)
         self.alive = False
+        self.rerender_on_next_frame = True      # initial render
+
+    def trigger_rerender(self):
+        self.rerender_on_next_frame = True
 
     def update_screen(self):
         # print("RERENDER")
@@ -30,7 +34,6 @@ class App:
 
         # Mount the hoster and render to the screen
         self.hoster.on_mount()
-        self.update_screen()
 
         clock = pygame.time.Clock()
 
@@ -41,11 +44,15 @@ class App:
                 if event.type == pygame.QUIT:
                     self.alive = False
                 elif event.type == pygame.VIDEORESIZE:
-                    screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                    pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
                     self.update_screen()
                 else:
                     # pass all other events down to the hoster
                     self.hoster.process_event(event)
+
+            if self.rerender_on_next_frame:
+                self.update_screen()
+                self.rerender_on_next_frame = False
 
 
 if __name__ == "__main__":

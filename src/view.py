@@ -1,24 +1,32 @@
 from typing import Tuple
+import warnings
 import pygame
 
 from component import Component
 from colors import *
+from util import SCALE_MODES
 
 
 class View(Component):
     default_bg_color = WHITE
     default_border_color = BLACK
 
+    default_scale_mode = "STRETCH"
+
     def __init__(
         self,
         x_flex: int = 1,
         y_flex: int = 1,
-        bg_color: Tuple[int, int, int] = default_bg_color,
-        border_color: Tuple[int, int, int] = default_border_color,
+        bg_color: pygame.Color = default_bg_color,
+        border_color: pygame.Color = default_border_color,
         border_width: int = 0,
         border_radius: int = 1,
         margins: Tuple[int, int, int, int] = (0, 0, 0, 0),  # (N, E, S, W)
+        # the region within this View's parent to resize to
         dest: Tuple[float, float, float, float] = (0, 0, 1, 1),            # (L, T, W, H) (floating point in [0, 1]),
+        scale_mode: str = None,
+        aspect_ratio: float = None,
+        abs_size: Tuple[int, int] = None,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -31,9 +39,46 @@ class View(Component):
         self.margins = margins
         self.dest = dest
 
+        # check for sizing argument conflicts
+        if aspect_ratio is not None and abs_size is not None:
+            warnings.warn(RuntimeWarning(
+                "values for both aspect_ratio and abs_size were given; " +
+                "aspect_ratio will be ignored"
+            ))
+            aspect_ratio = None
+
+        # dynamically set scale mode based on given inputs
+        if scale_mode is None:
+            if aspect_ratio is not None:
+                scale_mode = "CONTAIN"
+            elif abs_size is not None:
+                scale_mode = "ORIGINAL"
+            else:
+                scale_mode = self.default_scale_mode
+        else:
+            if scale_mode == "CONTAIN" and aspect_ratio is None:
+                warnings.warn(RuntimeWarning(
+                    "scale_mode was set to \"CONTAIN\" but no aspect ratio was given; " +
+                    "\"STRETCH\" will be used instead"
+                ))
+                scale_mode = self.default_scale_mode
+            elif scale_mode == "ORIGINAL" and abs_size is None:
+                warnings.warn(RuntimeWarning(
+                    "scale_mode was set to \"ORIGINAL\" but no absolute size was given; " +
+                    "\"STRETCH\" will be used instead"
+                ))
+                scale_mode = self.default_scale_mode
+
+        self.scale_mode = scale_mode
+        self.aspect_ratio = aspect_ratio
+        self.abs_size = abs_size
+
         self.child_regions_cache = []   # format (Component, Rect)
         self.hover_child = None
         self.press_child = None
+
+        # TODO: maybe repalce this with a Rect representing collision area
+        self.collision_offset = [0, 0]
     
     def render_children_onto(self, surf, region=None):
         if region is None:
@@ -75,35 +120,52 @@ class View(Component):
         render_children=True,
         render_border=True
     ):
+        self.collision_offset = [0, 0]
+
         if region is None:
             region = surf.get_rect()
         
         # adjust region to account for margins
-        region = pygame.Rect(
+        draw_region = pygame.Rect(
             region.left + self.margins[0],
             region.top + self.margins[1],
             region.width - (self.margins[0] + self.margins[2]),
             region.height - (self.margins[1] + self.margins[3]),
         )
 
+        # adjust region to account for scale_mode (i.e. enforce aspect ratio)
+        if self.abs_size:
+            src_size = self.abs_size
+        else:
+            src_size = (self.aspect_ratio, 1)
+        target_size = SCALE_MODES[self.scale_mode](src_size, draw_region.size)
+        draw_region = pygame.Rect(
+            draw_region.left + round((draw_region.size[0] - target_size[0]) / 2),
+            draw_region.top + round((draw_region.size[1] - target_size[1]) / 2),
+            *target_size
+        )
+
+        self.collision_offset[0] += region.left - draw_region.left
+        self.collision_offset[1] += region.top - draw_region.top
+
         if self.border_width > 0:
-            pygame.draw.rect(                                   # fill background
-                surf, self.bg_color, region,
+            pygame.draw.rect(                           # fill background
+                surf, self.bg_color, draw_region,
                 width=0, border_radius=self.border_radius
             )
         else:
-            surf.fill(self.bg_color, region)            # fill background
+            surf.fill(self.bg_color, draw_region)            # fill background
         
         # render all children (on top)
         if render_children:
-            self.render_children_onto(surf, region)
+            self.render_children_onto(surf, draw_region)
         
         # render border (on top)
         if render_border:
-            self.render_border_onto(surf, region)
+            self.render_border_onto(surf, draw_region)
 
         # return the affected region
-        return region
+        return draw_region
     
     def process_event(self, event):
         # Handle all mouse events (excluding scroll wheel - see https://github.com/pygame/pygame/issues/682)

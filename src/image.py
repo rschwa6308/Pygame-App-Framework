@@ -1,23 +1,7 @@
 import pygame
 
 from view import View
-
-
-# Functions take `image_size` and `region_size` and return `target_size`
-SCALE_MODES = {
-    # maintain original size TODO: crop to fit region
-    "ORIGINAL": lambda img, reg:
-        img, # (min(img[0], reg[0]), min(img[1], reg[1])),
-    # stretch to fill region
-    "STRETCH": lambda img, reg:
-        reg,
-    # stretch to fill smallest dimension of region (maintains aspect ratio)
-    "CONTAIN": lambda img, reg:
-        (round(img[0] * (r := reg[(d := reg[0] > reg[1])] / img[d])), round(img[1] * r)),
-    # stretch to fill largest dimension of region (maintains aspect ratio)
-    "COVER":   lambda img, reg:
-        (round(img[0] * (r := reg[(d := reg[0] < reg[1])] / img[d])), round(img[1] * r)),
-}
+from util import SCALE_MODES
 
 
 class Image(View):

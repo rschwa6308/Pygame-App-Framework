@@ -36,20 +36,21 @@ level_screens = [
             dest=(0.6, 0.3, 0.35, 0.5),
             canvas_size_factors=(1.0, 3.0),
             border_width=3,
+            aspect_ratio=1,
             children=[
                 View(bg_color=GREEN, dest=(0.1, 0.0, 0.2, 1.0), margins=(0, 10, 0, 10)),
                 Button(bg_color=RED, dest=(0.4, 0.1, 0.2, 0.2), text="!", on_click=lambda s, e: print("HI")),
                 View(bg_color=BLUE, dest=(0.4, 0.4, 0.2, 0.2)),
                 View(bg_color=MAGENTA, dest=(0.8, 0.6, 0.2, 0.2)),
                 # TODO: currently testing deeply nested scrollview event behavior
-                View(children=[ScrollView(
+                ScrollView(
                     border_width=1,
                     dest=(0.4, 0.7, 0.3, 0.2),
                     canvas_size_factors=(2.0, 2.0),
                     children=[
                         Image(image=test_image_source)
                     ]
-                )])
+                )
             ]
         ),
         ScrollView(
@@ -77,7 +78,10 @@ level_select_buttons = [
         border_width=10,
         border_radius=20,
         on_click=lambda self, event: self.run_hook("NAVIGATE_TO", self.nav_target),
-        margins=(5,)*4
+        margins=(5,)*4,
+        # aspect_ratio=1,
+        abs_size=(200, 100),
+        # scale_mode="CONTAIN"
     )
     for x, level in enumerate(level_screens)
 ]
