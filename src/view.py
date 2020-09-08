@@ -4,7 +4,7 @@ import pygame
 
 from component import Component
 from colors import *
-from util import SCALE_MODES
+from util import SCALE_MODES, MOUSE_POS_EVENT_TYPES
 
 
 class View(Component):
@@ -77,9 +77,12 @@ class View(Component):
         self.hover_child = None
         self.press_child = None
 
-        # TODO: maybe repalce this with a Rect representing collision area
         self.collision_offset = [0, 0]
-    
+        self.collision_rect = None
+
+        self.cursor_pos_cache = None
+        self.cursor_abs_pos_cache = None
+
     def render_children_onto(self, surf, region=None):
         if region is None:
             region = surf.get_rect()
@@ -145,8 +148,7 @@ class View(Component):
             *target_size
         )
 
-        self.collision_offset[0] += region.left - draw_region.left
-        self.collision_offset[1] += region.top - draw_region.top
+        self.collision_rect = draw_region.copy()
 
         if self.border_width > 0:
             pygame.draw.rect(                           # fill background
@@ -169,15 +171,20 @@ class View(Component):
     
     def process_event(self, event):
         # Handle all mouse events (excluding scroll wheel - see https://github.com/pygame/pygame/issues/682)
-        if event.type in (
-            pygame.MOUSEMOTION,
-            pygame.MOUSEBUTTONDOWN,
-            pygame.MOUSEBUTTONUP,
-        ):
+        if event.type in MOUSE_POS_EVENT_TYPES:
+            self.cursor_pos_cache = event.pos
+            self.cursor_abs_pos_cache = event.abs_pos
+
             new_hover_child = None
 
             # find new hover child
-            for child, region in self.child_regions_cache:
+            # for child, region in self.child_regions_cache:
+            for child in self.children:
+                region = child.collision_rect
+
+                if region is None:  # skip child if it has not yet been rendered
+                    continue
+
                 adjusted_pos = (
                     event.pos[0] + self.collision_offset[0],
                     event.pos[1] + self.collision_offset[1]

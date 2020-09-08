@@ -42,7 +42,6 @@ level_screens = [
                 Button(bg_color=RED, dest=(0.4, 0.1, 0.2, 0.2), text="!", on_click=lambda s, e: print("HI")),
                 View(bg_color=BLUE, dest=(0.4, 0.4, 0.2, 0.2)),
                 View(bg_color=MAGENTA, dest=(0.8, 0.6, 0.2, 0.2)),
-                # TODO: currently testing deeply nested scrollview event behavior
                 ScrollView(
                     border_width=1,
                     dest=(0.4, 0.7, 0.3, 0.2),
@@ -79,8 +78,8 @@ level_select_buttons = [
         border_radius=20,
         on_click=lambda self, event: self.run_hook("NAVIGATE_TO", self.nav_target),
         margins=(5,)*4,
-        # aspect_ratio=1,
-        abs_size=(200, 100),
+        aspect_ratio=2,
+        # abs_size=(200, 100),
         # scale_mode="CONTAIN"
     )
     for x, level in enumerate(level_screens)
@@ -118,11 +117,13 @@ app.run()
 
 
 # TODO:
-#   - view fixed aspect ratio
-#   - view min/max width/height
-#   - view padding
-#   - ListView? (maybe not necessary since list comprehension works so well)
-#   - better support of TRANSPARENT backgrounds
-#   - optionally different ScrollView behavior where children size matches parent's siblings (aunts/uncles ?)
-#     (sort of breaks the whole paradigm so maybe not)
-#   - click+drag scroll bars (might be hard since currently no support for click+drag anywhere)
+#   [✓] View fixed aspect ratio
+#   [✓] View exact width/height
+#   [ ] View min/max width/height
+#   [ ] View padding
+#   [ ] ListView? (maybe not necessary since list comprehension works so well)
+#   [ ] better support of TRANSPARENT backgrounds
+#   [ ] optionally different ScrollView behavior where children size matches parent's siblings (aunts/uncles ?)
+#       (sort of breaks the whole paradigm so maybe not)
+#   [ ] click+drag scroll bars (might be hard since currently no support for click+drag anywhere)
+#   [✓] better support for nested ScrollViews

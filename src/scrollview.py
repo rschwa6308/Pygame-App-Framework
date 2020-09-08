@@ -68,7 +68,15 @@ class ScrollView(View):
                         self.scroll_area[i] = min(self.scroll_area[i], 1 - self.scroll_area[2+i])
                 
                 if self.scroll_area != old_scroll_area:
+                    # flag as processed (prevents double-scrolling)
                     event.flags.append("SCROLL_PROCESSED")
+                    # post a mouse-motion event to trigger a re-run of child hover calculation on the next frame
+                    if self.cursor_abs_pos_cache is not None:
+                        pygame.event.post(pygame.event.Event(
+                            pygame.MOUSEMOTION,
+                            pos=self.cursor_abs_pos_cache,
+                            rel=(0, 0),
+                        ))
                     self.run_hook("TRIGGER_RERENDER")
     
     def render_onto(

@@ -1,10 +1,14 @@
+import os
 import pygame
 
 from view import View
 from gridview import GridView
 from button import Button
 from text import Text
+from image import Image
 from hoster import Hoster
+from colors import *
+from util import MOUSE_POS_EVENT_TYPES
 
 
 class App:
@@ -48,6 +52,8 @@ class App:
                     self.update_screen()
                 else:
                     # pass all other events down to the hoster
+                    if event.type in MOUSE_POS_EVENT_TYPES:
+                        event.abs_pos = event.pos
                     self.hoster.process_event(event)
 
             if self.rerender_on_next_frame:

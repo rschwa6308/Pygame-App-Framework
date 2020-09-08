@@ -1,3 +1,4 @@
+import pygame
 
 
 # Functions take `src_size` and `region_size` and return `target_size`
@@ -15,3 +16,10 @@ SCALE_MODES = {
     "COVER": lambda src, reg:
         (round(src[0] * (r := max(reg[0] / src[0], reg[1] / src[1]))), round(src[1] * r)),
 }
+
+
+MOUSE_POS_EVENT_TYPES = (
+    pygame.MOUSEMOTION,
+    pygame.MOUSEBUTTONDOWN,
+    pygame.MOUSEBUTTONUP,
+)
