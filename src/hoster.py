@@ -22,12 +22,21 @@ class Hoster(Component):
     
     def current_component(self):
         return self.component_id_map[self.nav_stack[-1]]
+
+    def set_caption(self):
+        """calls a hook to set the window caption based on the current component;
+        called whenever the current component changes
+        """
+        caption = self.nav_stack[-1]
+        self.run_hook("SET_CAPTION", caption)
     
     def navigate_to(self, new_id):
         print(f"! navigating to \"{new_id}\" !")
-        if self.nav_stack: self.current_component().on_unmount()
+        if self.nav_stack:
+            self.current_component().on_unmount()
         self.nav_stack.append(new_id)
         self.current_component().on_mount()
+        self.set_caption()
         self.run_hook("TRIGGER_RERENDER")
     
     def navigate_back(self):
@@ -37,6 +46,7 @@ class Hoster(Component):
         self.current_component().on_unmount()
         self.nav_stack.pop()
         self.current_component().on_mount()
+        self.set_caption()
         self.run_hook("TRIGGER_RERENDER")
     
     def process_event(self, event):

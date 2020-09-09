@@ -78,7 +78,7 @@ level_select_buttons = [
         border_radius=20,
         on_click=lambda self, event: self.run_hook("NAVIGATE_TO", self.nav_target),
         margins=(5,)*4,
-        aspect_ratio=2,
+        aspect_ratio=1,
         # abs_size=(200, 100),
         # scale_mode="CONTAIN"
     )
@@ -112,7 +112,7 @@ hoster = Hoster(
 )
 
 
-app = App(hoster)
+app = App(hoster, fullscreen=True, quit_keys=[pygame.K_ESCAPE])
 app.run()
 
 
@@ -127,3 +127,4 @@ app.run()
 #       (sort of breaks the whole paradigm so maybe not)
 #   [ ] click+drag scroll bars (might be hard since currently no support for click+drag anywhere)
 #   [✓] better support for nested ScrollViews
+#   [✓] fullscreen support
