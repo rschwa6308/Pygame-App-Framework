@@ -126,6 +126,7 @@ class App:
     def toggle_fullscreen(self):
         self.set_fullscreen(not self.fullscreen)
 
+    # TODO: add an optional `target` argument here that will cause only target to rerender
     def trigger_rerender(self):
         self.rerender_on_next_frame = True
 
@@ -159,6 +160,8 @@ class App:
         while self.alive:
             clock.tick(target_fps)
 
+            self.hoster.step()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.alive = False
@@ -167,7 +170,6 @@ class App:
                         max(event.w, self.min_screen_size[0]),
                         max(event.h, self.min_screen_size[1]),
                     ) if (event.w, event.h) != (0, 0) else (0, 0)
-                    print(new_screen_size)
                     pygame.display.set_mode(new_screen_size, self.get_display_flags())
                     self.update_screen()
                 elif event.type == pygame.KEYDOWN and event.key in self.quit_keys:

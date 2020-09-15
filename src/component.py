@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Sequence
 
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"   # bruh
@@ -13,6 +14,8 @@ class Component:
         "hover": False,
         "press": False
     }
+
+    stepped = False
 
     def __init__(
         self,
@@ -33,6 +36,10 @@ class Component:
             "hover": False,
             "press": False
         }
+
+    def get_descendants(self) -> Sequence[Component]:
+        """Get a flat list of all descendants"""
+        return self.children + [c for child in self.children for c in child.get_descendants()]
 
     def render_onto(self, surf: pygame.Surface):
         """Render the contents of self to the given surface"""
