@@ -257,7 +257,7 @@ level_select_screen = GridView([
             text="Level Select",
             font_kwargs={
                 "font_size": 40,
-                "bold": True
+                "bold": True,
             },
             dest=(0.3, 0.1, 0.4, 0.8)
         )
@@ -280,7 +280,7 @@ hoster = Hoster(
 )
 
 
-app = App(hoster, fullscreen=False, borderless=False, quit_keys=[pygame.K_ESCAPE])
+app = App(hoster, fullscreen=True, borderless=False, quit_keys=[pygame.K_ESCAPE])
 app.run()
 
 

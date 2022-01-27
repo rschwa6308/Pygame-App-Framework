@@ -21,9 +21,9 @@ class View(Component):
         border_color: pygame.Color = default_border_color,
         border_width: int = 0,
         border_radius: int = 1,
-        margins: Tuple[int, int, int, int] = (0, 0, 0, 0),  # (N, E, S, W)
+        margins: Tuple[int, int, int, int] = (0, 0, 0, 0),                  # (N, E, S, W)
         # the region within this View's parent to resize to
-        dest: Tuple[float, float, float, float] = (0, 0, 1, 1),            # (L, T, W, H) (floating point in [0, 1]),
+        dest: Tuple[float, float, float, float] = (0., 0., 1., 1.),         # (L, T, W, H) (floating points in [0, 1]),
         scale_mode: str = None,
         aspect_ratio: float = None,
         abs_size: Tuple[int, int] = None,
